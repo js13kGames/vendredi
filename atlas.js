@@ -26,6 +26,17 @@ let Cell = function(args) {
 
 	// http://www.redblobgames.com/grids/hexagons/#distances
 	let distance = function(cell) {
+		let s = this.pixelCoords();
+		let d = cell.pixelCoords();
+		let dx = s[0] - d[0];
+		let dy = s[1] - d[1];
+		return Math.sqrt(
+			dx*dx + dy*dy
+		);
+	};
+
+	// http://www.redblobgames.com/grids/hexagons/#distances
+	let distanceCells = function(cell) {
 		return Math.max(
 			Math.abs(cell.coords[0] - this.coords[0]),
 			Math.abs(cell.coords[1] - this.coords[1]),
@@ -108,6 +119,7 @@ let Cell = function(args) {
 		nextDirection,
 		previousDirection,
 		distance,
+		distanceCells,
 		createNeighbors,
 		onCircle,
 		onDisk,
