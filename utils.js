@@ -15,6 +15,6 @@ window.addEventListener('resize', (event) => {
 	update();
 });
 
-window.addEventListener('load', function load(event) {
+window.addEventListener('load', (event) => {
 	update();
 });
