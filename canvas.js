@@ -110,6 +110,23 @@ let Canvas = function(args) {
 		});
 	};
 
+	let drawGradients = function(magnitude) {
+		magnitude = magnitude || 1.0;
+		this.atlas.onMesh(this.atlas.meshSize).forEach((cell) => {
+			let target = Cell({
+				coords: cell.coords.map((n, i) => n + cell.gradient[i] * magnitude),
+			});
+			let [sx, sy] = convertCoords.call(this, cell.pixelCoords());
+			let [tx, ty] = convertCoords.call(this, target.pixelCoords())
+			this.context.strokeStyle = 'gray';
+			this.context.beginPath();
+			this.context.moveTo(sx, sy);
+			this.context.lineTo(tx, ty);
+			this.context.stroke();
+			this.context.closePath();
+		});
+	};
+
 	let draw = function() {
 		this.reset();
 		this.atlas.onDisk(this.atlas.size).forEach((cell) => {
