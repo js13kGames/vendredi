@@ -1,5 +1,6 @@
 let Atlas = function(args) {
 	let size = 1;
+	let meshSize = 2;
 	let center = Cell({
 		coords: [0, 0, 0]
 	});
@@ -8,12 +9,20 @@ let Atlas = function(args) {
 
 	if (args) {
 		size = args.size;
+		meshSize = args.meshSize;
 	}
+
+	let generateGradients = function(radius) {
+		this.onMesh(radius).forEach((cell) => {
+			cell.gradient = Perlin.generateGradient(radius);
+		});
+	};
 
 	let generateAtlas = function() {
 		for (let i = 0; i < size; i++) {
 			this.onCircle(i).forEach((cell) => cell.createNeighbors());
 		}
+		generateGradients.call(this, meshSize);
 		// Percentage of islands
 		let threshold = 0.995;
 		// For each new island, give that much matter to spread around
@@ -186,6 +195,7 @@ let Atlas = function(args) {
 
 	return {
 		size,
+		meshSize,
 		center,
 		cursor,
 		path,

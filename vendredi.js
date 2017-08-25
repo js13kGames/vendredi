@@ -1,6 +1,7 @@
 window.addEventListener('load', function load(event) {
 	let atlas = Atlas({
-		size: 32
+		size: 32,
+		meshSize: 4
 	});
 	atlas.generateAtlas();
 
