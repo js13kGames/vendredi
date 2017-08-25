@@ -77,6 +77,17 @@ let Atlas = function(args) {
 		return diskCells;
 	};
 
+	let onMesh = function(radius) {
+		let meshCells = [];
+		this.onDisk(this.size).forEach((cell) => {
+			let [x, y, z] = cell.coords;
+			if ((Math.abs(x) % radius === 0) && (Math.abs(y) % radius === 0) && (Math.abs(z) % radius === 0)) {
+				meshCells.push(cell);
+			}
+		});
+		return meshCells;
+	};
+
 	let findCell = function([tx, ty, tz]) {
 		let cell = this.center;
 		let [sx, sy, sz] = cell.coords;
@@ -181,6 +192,7 @@ let Atlas = function(args) {
 		generateAtlas,
 		onCircle,
 		onDisk,
+		onMesh,
 		findCell,
 		findCursorCell,
 		findPath,
