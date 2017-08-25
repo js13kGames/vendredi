@@ -1,18 +1,9 @@
-let CanvasUtils = function(args) {
-	let COLORS = {
-		"background": 'rgb(240, 240, 240)',
-		"water": 'rgb(224, 224, 237)',
-		"island": 'rgb(128, 237, 128)',
-		"vendredi": 'rgb(186, 0, 0)',
-		"cursor": 'rgb(186, 128, 128)',
-		"path": 'rgb(192, 192, 237)'
-	};
-
+let Canvas = function(args) {
 	let reset = function() {
-		this.context.fillStyle = COLORS.background;
+		this.context.fillStyle = Canvas.COLORS.background;
 		this.context.fillRect(0, 0, this.width, this.height);
 	};
-	
+
 	let drawCircle = function(color) {
 		return function(cell) {
 			let cellCoords = cell.pixelCoords();
@@ -27,10 +18,10 @@ let CanvasUtils = function(args) {
 			this.context.closePath();
 		};
 	};
-	let drawWater = drawCircle(COLORS.water);
-	let drawVendredi = drawCircle(COLORS.vendredi);
-	let drawCursor = drawCircle(COLORS.cursor);
-	let drawPathStep = drawCircle(COLORS.path);
+	let drawWater = drawCircle(Canvas.COLORS.water);
+	let drawVendredi = drawCircle(Canvas.COLORS.vendredi);
+	let drawCursor = drawCircle(Canvas.COLORS.cursor);
+	let drawPathStep = drawCircle(Canvas.COLORS.path);
 
 	let drawIsland = function(cell) {
 		let east = cell.neighbors['east'];
@@ -44,7 +35,7 @@ let CanvasUtils = function(args) {
 			let ncoords = east.pixelCoords();
 			let nx = canvas.center.x + (ncoords[0] - centerCoords[0]) * canvas.unit;
 			let ny = canvas.center.y + (ncoords[1] - centerCoords[1]) * canvas.unit;
-			this.context.fillStyle = COLORS.island;
+			this.context.fillStyle = Canvas.COLORS.island;
 			this.context.beginPath();
 			this.context.moveTo(x, y);
 			this.context.arc(x, y, canvas.unit/2.0, Math.PI/2.0, -Math.PI/2.0);
@@ -57,7 +48,7 @@ let CanvasUtils = function(args) {
 			let ncoords = northeast.pixelCoords();
 			let nx = canvas.center.x + (ncoords[0] - centerCoords[0]) * canvas.unit;
 			let ny = canvas.center.y + (ncoords[1] - centerCoords[1]) * canvas.unit;
-			this.context.fillStyle = COLORS.island;
+			this.context.fillStyle = Canvas.COLORS.island;
 			this.context.beginPath();
 			this.context.moveTo(x, y);
 			this.context.arc(x, y, canvas.unit/2.0, Math.PI/6.0, -5.0*Math.PI/6.0);
@@ -70,7 +61,7 @@ let CanvasUtils = function(args) {
 			let ncoords = southeast.pixelCoords();
 			let nx = canvas.center.x + (ncoords[0] - centerCoords[0]) * canvas.unit;
 			let ny = canvas.center.y + (ncoords[1] - centerCoords[1]) * canvas.unit;
-			this.context.fillStyle = COLORS.island;
+			this.context.fillStyle = Canvas.COLORS.island;
 			this.context.beginPath();
 			this.context.moveTo(x, y);
 			this.context.arc(x, y, canvas.unit/2.0, 5.0*Math.PI/6.0, -Math.PI/6.0);
@@ -79,7 +70,7 @@ let CanvasUtils = function(args) {
 			this.context.fill();
 			this.context.closePath();
 		} else {
-			drawCircle.call(this, COLORS.island).call(this, cell);
+			drawCircle.call(this, Canvas.COLORS.island).call(this, cell);
 		}
 	};
 
@@ -134,9 +125,18 @@ let CanvasUtils = function(args) {
 		draw
 	};
 };
+Canvas.COLORS = {
+	"background": 'rgb(240, 240, 240)',
+	"water": 'rgb(224, 224, 237)',
+	"island": 'rgb(128, 237, 128)',
+	"vendredi": 'rgb(186, 0, 0)',
+	"cursor": 'rgb(186, 128, 128)',
+	"path": 'rgb(192, 192, 237)'
+};
+
 
 window.addEventListener('load', () => {
 	let canvas = document.getElementById('canvas');
 	let context = canvas.getContext('2d');
-	Object.assign(canvas, {context}, CanvasUtils());
+	Object.assign(canvas, {context}, Canvas());
 });
