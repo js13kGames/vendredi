@@ -99,6 +99,17 @@ let Canvas = function(args) {
 		});
 	}
 
+	let drawMesh = function(radius) {
+		this.atlas.onMesh(radius).forEach((cell) => {
+			let [x, y] = convertCoords.call(this, cell.pixelCoords());
+			this.context.fillStyle = 'black';
+			this.context.beginPath();
+			this.context.arc(x, y, 0.1 * this.unit, 0, 2*Math.PI);
+			this.context.fill();
+			this.context.closePath();
+		});
+	};
+
 	let draw = function() {
 		this.reset();
 		this.atlas.onDisk(this.atlas.size).forEach((cell) => {
