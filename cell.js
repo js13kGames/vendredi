@@ -1,5 +1,4 @@
 let Cell = function(args) {
-	let DIRECTIONS = ['east', 'northeast', 'northwest', 'west', 'southwest', 'southeast'];
 	let coords = [];
 	let neighbors = {};
 	let type = 'water';
@@ -13,9 +12,9 @@ let Cell = function(args) {
 
 	let offsetDirectionFunction = function(offset) {
 		return function(direction) {
-			let index = DIRECTIONS.findIndex((e) => e === direction);
+			let index = Cell.DIRECTIONS.findIndex((e) => e === direction);
 			if (index !== -1) {
-				return DIRECTIONS[(index + offset) % 6];
+				return Cell.DIRECTIONS[(index + offset) % 6];
 			} else {
 				throw new Error(`reverseDirection: '${direction}' is not a valid direction.`)
 			}
@@ -62,14 +61,14 @@ let Cell = function(args) {
 	};
 
 	let createNeighbors = function() {
-		for (let direction of DIRECTIONS) {
+		for (let direction of Cell.DIRECTIONS) {
 			if (neighbors[direction] === undefined) {
 				neighbors[direction] = Cell({
 					coords: neighborCoords(direction)
 				});
 			}
 		}
-		for (let direction of DIRECTIONS) {
+		for (let direction of Cell.DIRECTIONS) {
 			// Create the link back from the neighbor to the current cell
 			let reverse = reverseDirection(direction);
 			neighbors[direction].neighbors[reverse] = this;
@@ -80,33 +79,6 @@ let Cell = function(args) {
 			neighbors[direction].neighbors[nextDirection(reverse)] = neighbors[previous];
 		}
 	};
-	let onCircle = function(radius) {
-		let circleCells = [];
-		let cell = this;
-		if (radius === 0) {
-			return [this];
-		}
-		for (let i = 0; i < radius; i++) {
-			cell = cell.neighbors.southwest;
-		}
-		for (let direction of DIRECTIONS) {
-			for (let i = 0; i < radius; i++) {
-				circleCells.push(cell);
-				cell = cell.neighbors[direction];
-			}
-		}
-		return circleCells;
-	};
-
-	let onDisk = function(radius) {
-		let cell = this;
-		let diskCells = [];
-		for (let i = 0; i <= radius; i++) {
-			cell.onCircle(i).forEach((c) => diskCells.push(c));
-		}
-		return diskCells;
-	};
-
 	let pixelCoords = function() {
 		let x = this.coords[0] + this.coords[2] / 2.0;
 		let y = Math.sqrt(3.0) * this.coords[2] / 2.0;
@@ -114,7 +86,6 @@ let Cell = function(args) {
 	};
 
 	return {
-		DIRECTIONS,
 		coords,
 		neighbors,
 		type,
@@ -124,8 +95,7 @@ let Cell = function(args) {
 		distance,
 		distanceCells,
 		createNeighbors,
-		onCircle,
-		onDisk,
 		pixelCoords
 	};
 };
+Cell.DIRECTIONS = ['east', 'northeast', 'northwest', 'west', 'southwest', 'southeast'];

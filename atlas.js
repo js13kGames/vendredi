@@ -12,13 +12,13 @@ let Atlas = function(args) {
 
 	let generateAtlas = function() {
 		for (let i = 0; i < size; i++) {
-			center.onCircle(i).forEach((cell) => cell.createNeighbors());
+			this.onCircle(i).forEach((cell) => cell.createNeighbors());
 		}
 		// Percentage of islands
 		let threshold = 0.995;
 		// For each new island, give that much matter to spread around
 		let magnitude = 8.0;
-		center.onDisk(size).forEach((cell) => {
+		this.onDisk(size).forEach((cell) => {
 			cell.potential = Math.random();
 			// If the cell is above 'threshold', give it matter to spread
 			if (cell.potential > threshold) {
@@ -30,12 +30,12 @@ let Atlas = function(args) {
 		// Spread the matter
 		while (!done) {
 			done = true;
-			center.onDisk(size).forEach((cell) => {
+			this.onDisk(size).forEach((cell) => {
 				if (cell.potential > threshold && cell.type !== 'island') {
 					cell.type = 'island';
 					let diff = cell.potential - threshold;
 					let n = [];
-					for (let direction of cell.DIRECTIONS) {
+					for (let direction of Cell.DIRECTIONS) {
 						let c = cell.neighbors[direction];
 						if (c && c.type !== 'island') {
 							n.push(c);
@@ -48,6 +48,33 @@ let Atlas = function(args) {
 				}
 			});
 		}
+	};
+
+	let onCircle = function(radius) {
+		let circleCells = [];
+		let cell = this.center;
+		if (radius === 0) {
+			return [cell];
+		}
+		for (let i = 0; i < radius; i++) {
+			cell = cell.neighbors.southwest;
+		}
+		for (let direction of Cell.DIRECTIONS) {
+			for (let i = 0; i < radius; i++) {
+				circleCells.push(cell);
+				cell = cell.neighbors[direction];
+			}
+		}
+		return circleCells;
+	};
+
+	let onDisk = function(radius) {
+		let cell = this.center;
+		let diskCells = [];
+		for (let i = 0; i <= radius; i++) {
+			this.onCircle(i).forEach((c) => diskCells.push(c));
+		}
+		return diskCells;
 	};
 
 	let findCell = function([tx, ty, tz]) {
@@ -118,7 +145,7 @@ let Atlas = function(args) {
 				path.reverse();
 				return path;
 			}
-			for (let direction of current.DIRECTIONS) {
+			for (let direction of Cell.DIRECTIONS) {
 				let next = current.neighbors[direction];
 				if (next && Array.isArray(next.coords) && cameFrom[next.coords.join(':')] === undefined) {
 					let priority = next.distance(Cell({coords}));
@@ -135,10 +162,10 @@ let Atlas = function(args) {
 	};
 
 	let move = function(direction) {
-		this.center.onCircle(this.size).forEach((cell) => {
-			let index = cell.DIRECTIONS.indexOf(direction);
-			let dir1 = cell.DIRECTIONS[(index + 2) % 6];
-			let dir2 = cell.DIRECTIONS[(index + 4) % 6];
+		this.onCircle(this.size).forEach((cell) => {
+			let index = Cell.DIRECTIONS.indexOf(direction);
+			let dir1 = Cell.DIRECTIONS[(index + 2) % 6];
+			let dir2 = Cell.DIRECTIONS[(index + 4) % 6];
 			if (cell.neighbors[dir1] !== undefined && cell.neighbors[dir2] !== undefined) {
 				cell.createNeighbors();
 			}
@@ -152,6 +179,8 @@ let Atlas = function(args) {
 		cursor,
 		path,
 		generateAtlas,
+		onCircle,
+		onDisk,
 		findCell,
 		findCursorCell,
 		findPath,

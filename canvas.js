@@ -91,9 +91,9 @@ let CanvasUtils = function(args) {
 
 	let drawEdges = function() {
 		let ccoords = this.atlas.center.pixelCoords();
-		this.atlas.center.onDisk(this.atlas.size).forEach((cell) => {
+		this.atlas.onDisk(this.atlas.size).forEach((cell) => {
 			let scoords = cell.pixelCoords();
-			for (let direction of cell.DIRECTIONS.slice(0, 3)) {
+			for (let direction of Cell.DIRECTIONS.slice(0, 3)) {
 				let target = cell.neighbors[direction];
 				if (target) {
 					let tcoords = target.pixelCoords();
@@ -114,12 +114,12 @@ let CanvasUtils = function(args) {
 
 	let draw = function() {
 		this.reset();
-		this.atlas.center.onDisk(this.atlas.size).forEach((cell) => {
+		this.atlas.onDisk(this.atlas.size).forEach((cell) => {
 			if (cell.type === 'island') {
 				drawIsland.call(this, cell);
 			}
 		});
-		this.atlas.center.onDisk(this.atlas.size).forEach((cell) => {
+		this.atlas.onDisk(this.atlas.size).forEach((cell) => {
 			if (cell.type === 'water') {
 				drawWater.call(this, cell);
 			}
