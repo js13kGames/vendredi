@@ -1,139 +1,9 @@
-let Cell = function(args) {
-	let DIRECTIONS = ['east', 'northeast', 'northwest', 'west', 'southwest', 'southeast'];
-	let coords = [];
-	let neighbors = {};
-	let type = 'water';
-
-	if (args) {
-		coords = args.coords;
-		Object.assign(neighbors, args.neighbors);
-		type = args.type || 'water';
-	}
-
-	let offsetDirectionFunction = function(offset) {
-		return function(direction) {
-			let index = DIRECTIONS.findIndex((e) => e === direction);
-			if (index !== -1) {
-				return DIRECTIONS[(index + offset) % 6];
-			} else {
-				throw new Error(`reverseDirection: '${direction}' is not a valid direction.`)
-			}
-		};
-	}
-	let reverseDirection = offsetDirectionFunction(3);
-	let nextDirection = offsetDirectionFunction(1);
-	let previousDirection = offsetDirectionFunction(5); // Do not use '-1' because '-1 % 6 === -1'
-
-	// http://www.redblobgames.com/grids/hexagons/#distances
-	let distance = function(cell) {
-		let s = this.pixelCoords();
-		let d = cell.pixelCoords();
-		let dx = s[0] - d[0];
-		let dy = s[1] - d[1];
-		return Math.sqrt(
-			dx*dx + dy*dy
-		);
-	};
-
-	// http://www.redblobgames.com/grids/hexagons/#distances
-	let distanceCells = function(cell) {
-		return Math.max(
-			Math.abs(cell.coords[0] - this.coords[0]),
-			Math.abs(cell.coords[1] - this.coords[1]),
-			Math.abs(cell.coords[2] - this.coords[2])
-		);
-	};
-
-	let neighborCoords = function(direction) {
-		if (direction === 'east') {
-			return [coords[0]+1, coords[1]-1, coords[2]];
-		} else if (direction === 'northeast') {
-			return [coords[0]+1, coords[1], coords[2]-1];
-		} else if (direction === 'northwest') {
-			return [coords[0], coords[1]+1, coords[2]-1];
-		} else if (direction === 'west') {
-			return [coords[0]-1, coords[1]+1, coords[2]];
-		} else if (direction === 'southwest') {
-			return [coords[0]-1, coords[1], coords[2]+1];
-		} else if (direction === 'southeast') {
-			return [coords[0], coords[1]-1, coords[2]+1];
-		}
-	};
-
-	let createNeighbors = function() {
-		for (let direction of DIRECTIONS) {
-			if (neighbors[direction] === undefined) {
-				neighbors[direction] = Cell({
-					coords: neighborCoords(direction)
-				});
-			}
-		}
-		for (let direction of DIRECTIONS) {
-			// Create the link back from the neighbor to the current cell
-			let reverse = reverseDirection(direction);
-			neighbors[direction].neighbors[reverse] = this;
-			// And link also the 2 neighbors of the current cell that touch the 'direction' neighbor
-			let next = nextDirection(direction);
-			neighbors[direction].neighbors[previousDirection(reverse)] = neighbors[next];
-			let previous = previousDirection(direction);
-			neighbors[direction].neighbors[nextDirection(reverse)] = neighbors[previous];
-		}
-	};
-	let onCircle = function(radius) {
-		let circleCells = [];
-		let cell = this;
-		if (radius === 0) {
-			return [this];
-		}
-		for (let i = 0; i < radius; i++) {
-			cell = cell.neighbors.southwest;
-		}
-		for (let direction of DIRECTIONS) {
-			for (let i = 0; i < radius; i++) {
-				circleCells.push(cell);
-				cell = cell.neighbors[direction];
-			}
-		}
-		return circleCells;
-	};
-	let onDisk = function(radius) {
-		let cell = this;
-		let diskCells = [];
-		for (let i = 0; i < radius; i++) {
-			cell.onCircle(i).forEach((c) => diskCells.push(c));
-		}
-		return diskCells;
-	};
-	let pixelCoords = function() {
-		let x = this.coords[0] + this.coords[2] / 2.0;
-		let y = Math.sqrt(3.0) * this.coords[2] / 2.0;
-		return [x, y];
-	};
-
-	return {
-		DIRECTIONS,
-		coords,
-		neighbors,
-		type,
-		reverseDirection,
-		nextDirection,
-		previousDirection,
-		distance,
-		distanceCells,
-		createNeighbors,
-		onCircle,
-		onDisk,
-		pixelCoords
-	};
-};
-
 let Atlas = function(args) {
 	let size = 1;
 	let center = Cell({
-		coords: [0, 0, 0],
-		type: 'island'
+		coords: [0, 0, 0]
 	});
-	let cursor = [0, 0, 0];
+	let cursor = center;
 	let path = [];
 
 	if (args) {
@@ -144,6 +14,65 @@ let Atlas = function(args) {
 		for (let i = 0; i < size; i++) {
 			center.onCircle(i).forEach((cell) => cell.createNeighbors());
 		}
+		// Percentage of islands
+		let threshold = 0.995;
+		// For each new island, give that much matter to spread around
+		let magnitude = 8.0;
+		center.onDisk(size).forEach((cell) => {
+			cell.potential = Math.random();
+			// If the cell is above 'threshold', give it matter to spread
+			if (cell.potential > threshold) {
+				cell.potential *= magnitude
+			};
+		});
+		center.potential = magnitude;
+		let done = false;
+		// Spread the matter
+		while (!done) {
+			done = true;
+			center.onDisk(size).forEach((cell) => {
+				if (cell.potential > threshold && cell.type !== 'island') {
+					cell.type = 'island';
+					let diff = cell.potential - threshold;
+					let n = [];
+					for (let direction of cell.DIRECTIONS) {
+						let c = cell.neighbors[direction];
+						if (c && c.type !== 'island') {
+							n.push(c);
+						}
+					}
+					n.forEach((c) => {
+						done = false;
+						c.potential += (diff / n.length);
+					});
+				}
+			});
+		}
+	};
+
+	let findCell = function([tx, ty, tz]) {
+		let cell = this.center;
+		let [sx, sy, sz] = cell.coords;
+		while ((tx - sx !== 0) || (ty - sy !== 0) || (tz - sz !== 0)) {
+			let dx = tx - sx;
+			let dy = ty - sy;
+			let dz = tz - sz;
+			if (dx > 0 && dy < 0) {
+				cell = cell.neighbors['east'];
+			} else if (dx > 0 && dz < 0) {
+				cell = cell.neighbors['northeast'];
+			} else if (dy > 0 && dz < 0) {
+				cell = cell.neighbors['northwest'];
+			} else if (dx < 0 && dy > 0) {
+				cell = cell.neighbors['west'];
+			} else if (dx < 0 && dz > 0) {
+				cell = cell.neighbors['southwest'];
+			} else if (dy < 0 && dz > 0) {
+				cell = cell.neighbors['southeast'];
+			}
+			[sx, sy, sz] = cell.coords;
+		}
+		return cell;
 	};
 
 	let findCursorCell = function([x, y]) {
@@ -163,7 +92,10 @@ let Atlas = function(args) {
 		} else {
 			RZ = - RX - RY;
 		}
-		return [RX, RY, RZ];
+		RX += this.center.coords[0];
+		RY += this.center.coords[1];
+		RZ += this.center.coords[2];
+		return findCell.call(this, [RX, RY, RZ]);
 	};
 
 	let findPath = function(coords) {
@@ -202,13 +134,27 @@ let Atlas = function(args) {
 		return [];
 	};
 
+	let move = function(direction) {
+		this.center.onCircle(this.size).forEach((cell) => {
+			let index = cell.DIRECTIONS.indexOf(direction);
+			let dir1 = cell.DIRECTIONS[(index + 2) % 6];
+			let dir2 = cell.DIRECTIONS[(index + 4) % 6];
+			if (cell.neighbors[dir1] !== undefined && cell.neighbors[dir2] !== undefined) {
+				cell.createNeighbors();
+			}
+		});
+		this.center = this.center.neighbors[direction];
+	};
+
 	return {
 		size,
 		center,
 		cursor,
 		path,
 		generateAtlas,
+		findCell,
 		findCursorCell,
-		findPath
+		findPath,
+		move
 	};
 }

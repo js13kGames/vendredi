@@ -8,7 +8,7 @@ let update = () => {
 		x: window.width / 2.0,
 		y: window.height / 2.0
 	};
-	canvas.unit = window.height / (32 * Math.sqrt(3));
+	canvas.unit = window.height / ((1 + canvas.atlas.size) * Math.sqrt(3));
 };
 
 window.addEventListener('resize', (event) => {
