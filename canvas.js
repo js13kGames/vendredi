@@ -89,6 +89,29 @@ let CanvasUtils = function(args) {
 		});
 	}
 
+	let drawEdges = function() {
+		let ccoords = this.atlas.center.pixelCoords();
+		this.atlas.center.onDisk(this.atlas.size).forEach((cell) => {
+			let scoords = cell.pixelCoords();
+			for (let direction of cell.DIRECTIONS.slice(0, 3)) {
+				let target = cell.neighbors[direction];
+				if (target) {
+					let tcoords = target.pixelCoords();
+					this.context.strokeStyle = 'black';
+					this.context.beginPath();
+					let sx = canvas.center.x + (scoords[0] - ccoords[0]) * canvas.unit;
+					let sy = canvas.center.y + (scoords[1] - ccoords[1]) * canvas.unit;
+					this.context.moveTo(sx, sy);
+					let tx = canvas.center.x + (tcoords[0] - ccoords[0]) * canvas.unit;
+					let ty = canvas.center.y + (tcoords[1] - ccoords[1]) * canvas.unit;
+					this.context.lineTo(tx, ty);
+					this.context.stroke();
+					this.context.closePath();
+				}
+			}
+		});
+	}
+
 	let draw = function() {
 		this.reset();
 		this.atlas.center.onDisk(this.atlas.size).forEach((cell) => {
