@@ -4,12 +4,17 @@ let Canvas = function(args) {
 		this.context.fillRect(0, 0, this.width, this.height);
 	};
 
+	let convertCoords = function([sx, sy]) {
+		let [cx, cy] = this.atlas.center.pixelCoords();
+		return [
+			this.center.x + (sx - cx) * this.unit,
+			this.center.y + (sy - cy) * this.unit
+		]
+	}
+
 	let drawCircle = function(color) {
 		return function(cell) {
-			let cellCoords = cell.pixelCoords();
-			let centerCoords = this.atlas.center.pixelCoords();
-			let x = canvas.center.x + (cellCoords[0] - centerCoords[0]) * canvas.unit;
-			let y = canvas.center.y + (cellCoords[1] - centerCoords[1]) * canvas.unit;
+			let [x, y] = convertCoords.call(this, cell.pixelCoords());
 			this.context.fillStyle = color;
 			this.context.beginPath();
 			this.context.moveTo(x, y);
@@ -27,14 +32,9 @@ let Canvas = function(args) {
 		let east = cell.neighbors['east'];
 		let northeast = cell.neighbors['northeast'];
 		let southeast = cell.neighbors['southeast'];
-		let cellCoords = cell.pixelCoords();
-		let centerCoords = this.atlas.center.pixelCoords();
-		let x = canvas.center.x + (cellCoords[0] - centerCoords[0]) * canvas.unit;
-		let y = canvas.center.y + (cellCoords[1] - centerCoords[1]) * canvas.unit;
+		let [x, y] = convertCoords.call(this, cell.pixelCoords());
 		if (east && east.type === 'island') {
-			let ncoords = east.pixelCoords();
-			let nx = canvas.center.x + (ncoords[0] - centerCoords[0]) * canvas.unit;
-			let ny = canvas.center.y + (ncoords[1] - centerCoords[1]) * canvas.unit;
+			let [nx, ny] = convertCoords.call(this, east.pixelCoords());
 			this.context.fillStyle = Canvas.COLORS.island;
 			this.context.beginPath();
 			this.context.moveTo(x, y);
@@ -45,9 +45,7 @@ let Canvas = function(args) {
 			this.context.closePath();
 		}
 		if (northeast && northeast.type === 'island') {
-			let ncoords = northeast.pixelCoords();
-			let nx = canvas.center.x + (ncoords[0] - centerCoords[0]) * canvas.unit;
-			let ny = canvas.center.y + (ncoords[1] - centerCoords[1]) * canvas.unit;
+			let [nx, ny] = convertCoords.call(this, northeast.pixelCoords());
 			this.context.fillStyle = Canvas.COLORS.island;
 			this.context.beginPath();
 			this.context.moveTo(x, y);
@@ -58,9 +56,7 @@ let Canvas = function(args) {
 			this.context.closePath();
 		}
 		if (southeast && southeast.type === 'island') {
-			let ncoords = southeast.pixelCoords();
-			let nx = canvas.center.x + (ncoords[0] - centerCoords[0]) * canvas.unit;
-			let ny = canvas.center.y + (ncoords[1] - centerCoords[1]) * canvas.unit;
+			let [nx, ny] = convertCoords.call(this, southeast.pixelCoords());
 			this.context.fillStyle = Canvas.COLORS.island;
 			this.context.beginPath();
 			this.context.moveTo(x, y);
