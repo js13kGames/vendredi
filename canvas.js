@@ -100,7 +100,7 @@ let Canvas = function(args) {
 	}
 
 	let drawMesh = function() {
-		this.atlas.onMesh(this.atlas.meshSize).forEach((cell) => {
+		this.atlas.onMesh().forEach((cell) => {
 			let [x, y] = convertCoords.call(this, cell.pixelCoords());
 			this.context.fillStyle = 'black';
 			this.context.beginPath();
@@ -112,9 +112,9 @@ let Canvas = function(args) {
 
 	let drawGradients = function(magnitude) {
 		magnitude = magnitude || 1.0;
-		this.atlas.onMesh(this.atlas.meshSize).forEach((cell) => {
+		this.atlas.onMesh().forEach((cell) => {
 			let target = Cell({
-				coords: cell.coords.map((n, i) => n + cell.gradient[i] * magnitude),
+				coords: cell.coords.map((n, i) => n + cell.gradient[i] * magnitude * this.atlas.meshSize),
 			});
 			let [sx, sy] = convertCoords.call(this, cell.pixelCoords());
 			let [tx, ty] = convertCoords.call(this, target.pixelCoords())
@@ -126,6 +126,22 @@ let Canvas = function(args) {
 			this.context.closePath();
 		});
 	};
+
+	let drawElevation = function(text) {
+		this.atlas.onDisk(this.atlas.size).forEach((cell) => {
+			let gray = ( 1.0 - cell.elevation ) * 255;
+			let color = `rgb(${gray}, 237, ${gray})`;
+			drawCircle.call(this, color).call(this, cell);
+			if (text) {
+				this.context.fillStyle = 'black';
+				this.context.textAlign = 'center';
+				this.context.textBaseline = 'middle';
+				let [x, y] = convertCoords.call(this, cell.pixelCoords());
+				let elevation = Math.round(cell.elevation * 10.0);
+				this.context.fillText(elevation, x, y);
+			}
+		});
+	}
 
 	let draw = function() {
 		this.reset();

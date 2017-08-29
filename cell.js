@@ -44,6 +44,33 @@ let Cell = function(args) {
 		);
 	};
 
+	let onCircle = function(radius) {
+		let circleCells = [];
+		let cell = this;
+		if (radius === 0) {
+			return [cell];
+		}
+		for (let i = 0; i < radius; i++) {
+			cell = cell.neighbors.southwest;
+		}
+		for (let direction of Cell.DIRECTIONS) {
+			for (let i = 0; i < radius; i++) {
+				circleCells.push(cell);
+				cell = cell.neighbors[direction];
+			}
+		}
+		return circleCells;
+	};
+
+	let onDisk = function(radius) {
+		let cell = this;
+		let diskCells = [];
+		for (let i = 0; i <= radius; i++) {
+			this.onCircle(i).forEach((c) => diskCells.push(c));
+		}
+		return diskCells;
+	};
+
 	let neighborCoords = function(direction) {
 		if (direction === 'east') {
 			return [coords[0]+1, coords[1]-1, coords[2]];
@@ -94,6 +121,8 @@ let Cell = function(args) {
 		previousDirection,
 		distance,
 		distanceCells,
+		onCircle,
+		onDisk,
 		createNeighbors,
 		pixelCoords
 	};
