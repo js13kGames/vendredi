@@ -19,7 +19,7 @@ let Atlas = function(args) {
 	};
 
 	let generateIslands = function() {
-		this.onDisk(this.size - this.meshSize).forEach((cell) => {
+		this.onDisk(this.size).forEach((cell) => {
 			let corners = [];
 			for (let c of cell.onDisk(this.meshSize)) {
 				let [x, y, z] = c.coords;
@@ -42,6 +42,9 @@ let Atlas = function(args) {
 			let elevation1 = corners[0].gradient.map((n, i) => n * d1[i]).reduce((s, n) => s + n, 0);
 			let elevation2 = corners[1].gradient.map((n, i) => n * d2[i]).reduce((s, n) => s + n, 0);
 			let elevation3 = corners[2].gradient.map((n, i) => n * d3[i]).reduce((s, n) => s + n, 0);
+			elevation1 = 6.0 * Math.pow(elevation1, 5) - 15.0 * Math.pow(elevation1, 4) + 10.0 * Math.pow(elevation1, 3);
+			elevation2 = 6.0 * Math.pow(elevation2, 5) - 15.0 * Math.pow(elevation2, 4) + 10.0 * Math.pow(elevation2, 3);
+			elevation3 = 6.0 * Math.pow(elevation3, 5) - 15.0 * Math.pow(elevation3, 4) + 10.0 * Math.pow(elevation3, 3);
 			let w1 = this.meshSize - cell.distanceCells(corners[0]);
 			let w2 = this.meshSize - cell.distanceCells(corners[1]);
 			let w3 = this.meshSize - cell.distanceCells(corners[2]);
@@ -53,7 +56,7 @@ let Atlas = function(args) {
 	};
 
 	let generateAtlas = function() {
-		for (let i = 0; i < this.size; i++) {
+		for (let i = 0; i < this.size + this.meshSize; i++) {
 			this.onCircle(i).forEach((cell) => cell.createNeighbors());
 		}
 		generateGradients.call(this);
@@ -70,7 +73,7 @@ let Atlas = function(args) {
 
 	let onMesh = function() {
 		let meshCells = [];
-		this.onDisk(this.size).forEach((cell) => {
+		this.onDisk(this.size + this.meshSize).forEach((cell) => {
 			let [x, y, z] = cell.coords;
 			if ((Math.abs(x) % this.meshSize === 0) && (Math.abs(y) % this.meshSize === 0) && (Math.abs(z) % this.meshSize === 0)) {
 				meshCells.push(cell);

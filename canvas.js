@@ -114,7 +114,7 @@ let Canvas = function(args) {
 		magnitude = magnitude || 1.0;
 		this.atlas.onMesh().forEach((cell) => {
 			let target = Cell({
-				coords: cell.coords.map((n, i) => n + cell.gradient[i] * magnitude * this.atlas.meshSize),
+				coords: cell.coords.map((n, i) => n + cell.gradient[i] * Math.sqrt(2.0) * magnitude * this.atlas.meshSize),
 			});
 			let [sx, sy] = convertCoords.call(this, cell.pixelCoords());
 			let [tx, ty] = convertCoords.call(this, target.pixelCoords())
@@ -141,7 +141,13 @@ let Canvas = function(args) {
 				this.context.fillText(elevation, x, y);
 			}
 		});
-	}
+	};
+
+	let drawDebug = function() {
+		drawElevation.call(this);
+		drawGradients.call(this, 0.45);
+		drawMesh.call(this);
+	};
 
 	let draw = function() {
 		this.reset();
