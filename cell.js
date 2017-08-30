@@ -2,7 +2,7 @@ let Cell = function(args) {
 	let coords = [];
 	let neighbors = {};
 	let type = 'water';
-	let potential = 0;
+	let gradient = Perlin.generateGradient();
 
 	if (args) {
 		coords = args.coords;
@@ -116,6 +116,7 @@ let Cell = function(args) {
 		coords,
 		neighbors,
 		type,
+		gradient,
 		reverseDirection,
 		nextDirection,
 		previousDirection,

@@ -12,12 +12,6 @@ let Atlas = function(args) {
 		meshSize = args.meshSize;
 	}
 
-	let generateGradients = function() {
-		this.onMesh().forEach((cell) => {
-			cell.gradient = Perlin.generateGradient();
-		});
-	};
-
 	let generateIslands = function() {
 		this.onDisk(this.size).forEach((cell) => {
 			cell.elevation = Perlin.calculate(cell, this.meshSize);
@@ -31,7 +25,6 @@ let Atlas = function(args) {
 		for (let i = 0; i < this.size + this.meshSize; i++) {
 			this.onCircle(i).forEach((cell) => cell.createNeighbors());
 		}
-		generateGradients.call(this);
 		generateIslands.call(this)
 	};
 
