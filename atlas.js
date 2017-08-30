@@ -20,35 +20,7 @@ let Atlas = function(args) {
 
 	let generateIslands = function() {
 		this.onDisk(this.size).forEach((cell) => {
-			let corners = [];
-			for (let c of cell.onDisk(this.meshSize)) {
-				let [x, y, z] = c.coords;
-				if ((Math.abs(x) % this.meshSize === 0) && (Math.abs(y) % this.meshSize === 0) && (Math.abs(z) % this.meshSize === 0)) {
-					corners.push(c);
-				}
-				if (corners.length >= 3) {
-					break;
-				}
-			};
-			let d1 = cell.coords.map((n, i) => n - corners[0].coords[i]);
-			let d2 = cell.coords.map((n, i) => n - corners[1].coords[i]);
-			let d3 = cell.coords.map((n, i) => n - corners[2].coords[i]);
-			let n1 = Math.sqrt(d1.reduce((s, n) => s + n*n, 0));
-			let n2 = Math.sqrt(d2.reduce((s, n) => s + n*n, 0));
-			let n3 = Math.sqrt(d3.reduce((s, n) => s + n*n, 0));
-			d1 = n1 > 0 ? d1.map((v) => v / n1) : d1;
-			d2 = n2 > 0 ? d2.map((v) => v / n2) : d2;
-			d3 = n3 > 0 ? d3.map((v) => v / n3) : d3;
-			let elevation1 = corners[0].gradient.map((n, i) => n * d1[i]).reduce((s, n) => s + n, 0);
-			let elevation2 = corners[1].gradient.map((n, i) => n * d2[i]).reduce((s, n) => s + n, 0);
-			let elevation3 = corners[2].gradient.map((n, i) => n * d3[i]).reduce((s, n) => s + n, 0);
-			elevation1 = 6.0 * Math.pow(elevation1, 5) - 15.0 * Math.pow(elevation1, 4) + 10.0 * Math.pow(elevation1, 3);
-			elevation2 = 6.0 * Math.pow(elevation2, 5) - 15.0 * Math.pow(elevation2, 4) + 10.0 * Math.pow(elevation2, 3);
-			elevation3 = 6.0 * Math.pow(elevation3, 5) - 15.0 * Math.pow(elevation3, 4) + 10.0 * Math.pow(elevation3, 3);
-			let w1 = this.meshSize - cell.distanceCells(corners[0]);
-			let w2 = this.meshSize - cell.distanceCells(corners[1]);
-			let w3 = this.meshSize - cell.distanceCells(corners[2]);
-			cell.elevation = (w1 * elevation1 + w2 * elevation2 + w3 * elevation3) / this.meshSize;
+			cell.elevation = Perlin.calculate(cell, this.meshSize);
 			if (cell.elevation > 0.8) {
 				cell.type = 'island';
 			}
