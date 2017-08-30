@@ -12,21 +12,21 @@ let Canvas = function(args) {
 		]
 	}
 
-	let drawCircle = function(color) {
+	let drawCircle = function(color, size = 1.0) {
 		return function(cell) {
 			let [x, y] = convertCoords.call(this, cell.pixelCoords());
 			this.context.fillStyle = color;
 			this.context.beginPath();
 			this.context.moveTo(x, y);
-			this.context.arc(x, y, canvas.unit/2.0, 0, 2*Math.PI);
+			this.context.arc(x, y, size * canvas.unit/2.0, 0, 2*Math.PI);
 			this.context.fill();
 			this.context.closePath();
 		};
 	};
 	let drawWater = drawCircle(Canvas.COLORS.water);
-	let drawVendredi = drawCircle(Canvas.COLORS.vendredi);
-	let drawCursor = drawCircle(Canvas.COLORS.cursor);
-	let drawPathStep = drawCircle(Canvas.COLORS.path);
+	let drawVendredi = drawCircle(Canvas.COLORS.vendredi, 0.75);
+	let drawCursor = drawCircle(Canvas.COLORS.cursor, 0.5);
+	let drawPathStep = drawCircle(Canvas.COLORS.path, 0.5);
 
 	let drawIsland = function(cell) {
 		let east = cell.neighbors['east'];
