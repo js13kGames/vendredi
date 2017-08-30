@@ -8,18 +8,21 @@ window.addEventListener('load', function load(event) {
 	let canvas = document.getElementById('canvas');
 	canvas.atlas = atlas;
 
-	window.addEventListener('mousemove', (event) => {
-		let x = (event.clientX - canvas.center.x) / canvas.unit;
-		let y = (event.clientY - canvas.center.y) / canvas.unit;
+	let updatePath = function(mousex, mousey) {
+		let x = (mousex - canvas.center.x) / canvas.unit;
+		let y = (mousey - canvas.center.y) / canvas.unit;
 		atlas.cursor = atlas.findCursorCell([x, y]);
 		atlas.path = atlas.findPath(atlas.cursor.coords);
+	};
+	window.addEventListener('mousemove', (event) => {
+		updatePath(event.clientX, event.clientY);
 	});
-	window.addEventListener('mousedown', (event) => {
-		let x = (event.clientX - canvas.center.x) / canvas.unit;
-		let y = (event.clientY - canvas.center.y) / canvas.unit;
+
+	let movePerSecond = 5;
+	let moveOnPath = function(start, path) {
 		let direction = 'east';
-		let first = atlas.path[0];
-		let second = atlas.path[1];
+		let first = path[0];
+		let second = path[1];
 		let dx = second.coords[0] - first.coords[0];
 		let dy = second.coords[1] - first.coords[1];
 		let dz = second.coords[2] - first.coords[2];
@@ -36,8 +39,14 @@ window.addEventListener('load', function load(event) {
 		} else if (dx === 0 && dy < 0 && dz > 0) {
 			atlas.move('southeast');
 		}
-		atlas.cursor = atlas.findCursorCell([x, y]);
-		atlas.path = atlas.findPath(atlas.cursor.coords);
+		let time = performance.now();
+		if (path.length > 2) {
+			setTimeout(moveOnPath, start + 1000 / movePerSecond - time, start + 1000 / movePerSecond, path.slice(1));
+		}
+	};
+
+	window.addEventListener('click', (event) => {
+		moveOnPath(performance.now(), atlas.path);
 	})
 
 	let render = function(time) {
