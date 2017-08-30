@@ -12,9 +12,9 @@ let Atlas = function(args) {
 		meshSize = args.meshSize;
 	}
 
-	let generateIslands = function() {
-		this.onDisk(this.size).forEach((cell) => {
-			cell.elevation = Perlin.calculate(cell, this.meshSize);
+	let reveal = function() {
+		this.onDisk(this.size - this.meshSize).forEach((cell) => {
+			cell.reveal(this.meshSize);
 			if (cell.elevation > 0.8) {
 				cell.type = 'island';
 			}
@@ -22,10 +22,10 @@ let Atlas = function(args) {
 	};
 
 	let generateAtlas = function() {
-		for (let i = 0; i < this.size + this.meshSize; i++) {
+		for (let i = 0; i < this.size; i++) {
 			this.onCircle(i).forEach((cell) => cell.createNeighbors());
 		}
-		generateIslands.call(this)
+		reveal.call(this)
 	};
 
 	let onCircle = function(radius) {
@@ -141,6 +141,7 @@ let Atlas = function(args) {
 			}
 		});
 		this.center = this.center.neighbors[direction];
+		reveal.call(this);
 	};
 
 	return {

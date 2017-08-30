@@ -161,7 +161,6 @@ let Canvas = function(args) {
 				drawWater.call(this, cell);
 			}
 		});
-		drawDebug.call(this);
 		drawPath.call(this, this.atlas.path)
 		drawCursor.call(this, this.atlas.cursor);
 		drawVendredi.call(this, this.atlas.center);

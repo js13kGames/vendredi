@@ -3,6 +3,7 @@ let Cell = function(args) {
 	let neighbors = {};
 	let type = 'water';
 	let gradient = Perlin.generateGradient();
+	let elevation = 0;
 
 	if (args) {
 		coords = args.coords;
@@ -112,11 +113,16 @@ let Cell = function(args) {
 		return [x, y];
 	};
 
+	let reveal = function(meshSize) {
+		this.elevation = Perlin.calculate(this, meshSize);
+	}
+
 	return {
 		coords,
 		neighbors,
 		type,
 		gradient,
+		elevation,
 		reverseDirection,
 		nextDirection,
 		previousDirection,
@@ -125,7 +131,8 @@ let Cell = function(args) {
 		onCircle,
 		onDisk,
 		createNeighbors,
-		pixelCoords
+		pixelCoords,
+		reveal
 	};
 };
 Cell.DIRECTIONS = ['east', 'northeast', 'northwest', 'west', 'southwest', 'southeast'];
