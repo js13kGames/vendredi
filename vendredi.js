@@ -1,6 +1,8 @@
 window.addEventListener('load', function load(event) {
 	let score = 0;
+	let food = 3;
 	let dayDuration = 1; // in seconds
+	let gameon = true;
 	let moving = false;
 	let movePerSecond = 10;
 	let atlas = Atlas({
@@ -13,12 +15,42 @@ window.addEventListener('load', function load(event) {
 	canvas.atlas = atlas;
 
 	let $score = document.getElementById('score');
+	let $food = document.getElementById('food');
+	let $dead = document.getElementById('dead');
+	let $finalDays = document.getElementById('final-days');
+
+	let die = function() {
+		gameon = false;
+		$finalDays.textContent = score;
+		$dead.style.display = 'block';
+	}
 	let updateScore = function() {
-		score += 1;
-		$score.textContent = '' + score;
-		setTimeout(updateScore, dayDuration * 1000);
+		let tens = Math.floor(score/10);
+		let units = score % 10;
+		$score.textContent = '';
+		if (tens > 0) {
+			$score.textContent = '55'.repeat(tens);
+		}
+		if (units > 0) {
+			$score.textContent += units;
+		}
+		if (gameon) {
+			score++;
+			setTimeout(updateScore, dayDuration * 1000);
+		}
 	};
 	updateScore();
+	let updateFood = function() {
+		if (food === 0) {
+			die();
+		}
+		$food.textContent = 'b'.repeat(food);
+		if (gameon) {
+			food--;
+			setTimeout(updateFood, dayDuration * 1000);
+		}
+	}
+	updateFood();
 
 	let updatePath = function(mousex, mousey) {
 		let x = (mousex - canvas.center.x) / canvas.unit;
@@ -69,7 +101,9 @@ window.addEventListener('load', function load(event) {
 
 	let render = function(time) {
 		canvas.draw();
-		window.requestAnimationFrame(render);
+		if (gameon) {
+			window.requestAnimationFrame(render);
+		}
 	};
 	window.requestAnimationFrame(render);
 });

@@ -1,3 +1,15 @@
+@font-face {
+	font-family: Avocado;
+	src: url('avocado.ttf') format('truetype');
+}
+@font-face {
+	font-family: Flood;
+	src: url('flood.ttf') format('truetype');
+}
+@font-face {
+	font-family: MayQueen;
+	src: url('mayqueen.ttf') format('truetype');
+}
 html, body {
 	margin: 0;
 	padding: 0;
@@ -16,15 +28,45 @@ html, body {
 	position: absolute;
 	top: 0;
 	left: 0;
+	width: 100vw;
 }
 
 #score {
 	display: block;
+	float: left;
+	width: 20vw;
 	font-size: 200%;
-}
-#score:after {
-	content: " days";
+	font-family: MayQueen;
 }
 #food {
 	display: block;
+	float: right;
+	font-family: Flood;
+	font-size: 200%;
+	color: rgb(128, 128, 237);
+}
+#dead {
+	display: none;
+	padding: 1ex;
+	margin-top: 33vh;
+	margin-left: 20vw;
+	margin-right: 20vw;
+
+	background: repeating-linear-gradient(-1deg, #AA673A, #AA673A 15%, #64320F 17%, #AA673A 30%);
+	border-color: #64320F;
+	border-left-width: 0.1ex;
+	border-top-width: 0.1ex;
+	border-right-width: 0.4ex;
+	border-bottom-width: 0.4ex;
+	border-style: solid;
+	border-radius: 1ex;
+
+	text-align: center;
+	font-family: Avocado;
+	font-size: 150%;
+	box-shadow: 1ex 1.5ex 10px black;
+}
+#dead #game-over {
+	font-size: 200%;
+	color: rgb(186, 0, 0);
 }
