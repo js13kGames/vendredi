@@ -8,6 +8,7 @@ window.addEventListener('load', function load(event) {
 	let canvas = document.getElementById('canvas');
 	canvas.atlas = atlas;
 
+	let moving = false;
 	let updatePath = function(mousex, mousey) {
 		let x = (mousex - canvas.center.x) / canvas.unit;
 		let y = (mousey - canvas.center.y) / canvas.unit;
@@ -15,10 +16,12 @@ window.addEventListener('load', function load(event) {
 		atlas.path = atlas.findPath(atlas.cursor.coords);
 	};
 	window.addEventListener('mousemove', (event) => {
-		updatePath(event.clientX, event.clientY);
+		if (!moving) {
+			updatePath(event.clientX, event.clientY);
+		}
 	});
 
-	let movePerSecond = 5;
+	let movePerSecond = 10;
 	let moveOnPath = function(start, path) {
 		let direction = 'east';
 		let first = path[0];
@@ -42,11 +45,16 @@ window.addEventListener('load', function load(event) {
 		let time = performance.now();
 		if (path.length > 2) {
 			setTimeout(moveOnPath, start + 1000 / movePerSecond - time, start + 1000 / movePerSecond, path.slice(1));
+		} else {
+			moving = false;
 		}
 	};
 
 	window.addEventListener('click', (event) => {
-		moveOnPath(performance.now(), atlas.path);
+		if (!moving) {
+			moving = true;
+			moveOnPath(performance.now(), atlas.path);
+		}
 	})
 
 	let render = function(time) {
