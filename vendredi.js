@@ -1,4 +1,8 @@
 window.addEventListener('load', function load(event) {
+	let score = 0;
+	let dayDuration = 1; // in seconds
+	let moving = false;
+	let movePerSecond = 10;
 	let atlas = Atlas({
 		size: 32,
 		meshSize: 4
@@ -8,7 +12,14 @@ window.addEventListener('load', function load(event) {
 	let canvas = document.getElementById('canvas');
 	canvas.atlas = atlas;
 
-	let moving = false;
+	let $score = document.getElementById('score');
+	let updateScore = function() {
+		score += 1;
+		$score.textContent = '' + score;
+		setTimeout(updateScore, dayDuration * 1000);
+	};
+	updateScore();
+
 	let updatePath = function(mousex, mousey) {
 		let x = (mousex - canvas.center.x) / canvas.unit;
 		let y = (mousey - canvas.center.y) / canvas.unit;
@@ -21,7 +32,6 @@ window.addEventListener('load', function load(event) {
 		}
 	});
 
-	let movePerSecond = 10;
 	let moveOnPath = function(start, path) {
 		let direction = 'east';
 		let first = path[0];
