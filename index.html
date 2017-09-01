@@ -15,17 +15,27 @@
 	<body>
 		<canvas id="canvas"></canvas>
 		<div id="board">
-			<div id="score"></div>
+			<div id="days"></div>
 			<div id="food">
-				<div id="fish"></div>
-				<div id="meat"></div>
+				<div id="fish" class="fish"></div>
+				<div id="meat" class="meat"></div>
 			</div>
 			<div id="dead">
 				<div id="game-over">
 					You just died!
 				</div>
 				<div id="final-score">
-					You survived <span id="final-days">0</span> days
+					<div id="final-score-days">
+						You survived <span id="final-days">0</span> days
+					</div>
+					<div id="final-score-islands">
+						Visited <span id="final-islands">0</span> islands
+					</div>
+					<div id="final-score-food">
+						Ate
+						<span id="final-fish">0</span><span class="flood fish">b</span>
+						<span id="final-meat">0</span><span class="flood meat">c</span>
+					</div>
 				</div>
 			</div>
 		</div>

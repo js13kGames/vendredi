@@ -18,6 +18,16 @@ html, body {
 	background: rgb(240, 240, 240);
 }
 
+.flood {
+	font-family: flood;
+}
+.fish {
+	color: rgb(128, 128, 237);
+}
+.meat {
+	color: rgb(237, 128, 128);
+}
+
 #canvas {
 	display: block;
 	width: 100%;
@@ -33,7 +43,7 @@ html, body {
 	width: 100vw;
 }
 
-#score {
+#days {
 	display: block;
 	float: left;
 	width: 20vw;
@@ -53,12 +63,6 @@ html, body {
 	text-align: right;
 
 	background: linear-gradient(-90deg, #CCCCCC, rgb(240, 240, 240));
-}
-#food #fish {
-	color: rgb(128, 128, 237);
-}
-#food #meat {
-	color: rgb(237, 128, 128);
 }
 
 @keyframes fadein {
@@ -89,7 +93,7 @@ html, body {
 #dead {
 	display: none;
 	padding: 1ex;
-	margin-top: 33vh;
+	margin-top: 25vh;
 	margin-left: 20vw;
 	margin-right: 20vw;
 
@@ -114,4 +118,13 @@ html, body {
 #dead #game-over {
 	font-size: 200%;
 	color: rgb(186, 0, 0);
+}
+#dead #final-score-islands,
+#dead #final-score-food {
+	font-size: 50%;
+}
+#dead #final-score-food .fish,
+#dead #final-score-food .meat {
+	padding-left: 0.1em;
+	font-size: 140%;
 }

@@ -1,5 +1,14 @@
 window.addEventListener('load', function load(event) {
-	let score = 0; // How many days of survival by Vendredi
+	let score = {
+		days: 0,
+		ate: {
+			fish: 0,
+			meat: 0
+		},
+		islands: 0,
+		move: 0
+	}
+	let days = 0; // How many days of survival by Vendredi
 	let fish = 3; // How many fish Vendredi has
 	let maxFish = 3; // Maximum fishes that Vendredi can keep
 	let meat = 0; // How many meat Vendredi has
@@ -19,34 +28,41 @@ window.addEventListener('load', function load(event) {
 	let canvas = document.getElementById('canvas');
 	canvas.atlas = atlas;
 
-	let $score = document.getElementById('score');
+	let $days = document.getElementById('days');
 	let $fish = document.getElementById('fish');
 	let $meat = document.getElementById('meat');
 	let $dead = document.getElementById('dead');
 	let $finalDays = document.getElementById('final-days');
+	let $finalIslands = document.getElementById('final-islands');
+	let $finalFish = document.getElementById('final-fish');
+	let $finalMeat = document.getElementById('final-meat');
 
 	let die = function() {
 		gameon = false;
-		$finalDays.textContent = score;
+		$finalDays.textContent = score.days;
+		$finalIslands.textContent = score.islands;
+		$finalFish.textContent = score.ate.fish;
+		$finalMeat.textContent = score.ate.meat;
 		$dead.style.display = 'block';
 	}
-	let updateScore = function() {
-		let tens = Math.floor(score/10);
-		let units = score % 10;
-		$score.textContent = '';
+	let updateDays = function() {
+		let tens = Math.floor(days/10);
+		let units = days % 10;
+		$days.textContent = '';
 		if (tens > 0) {
-			$score.textContent = '55'.repeat(tens);
+			$days.textContent = '55'.repeat(tens);
 		}
 		if (units > 0) {
-			$score.textContent += units;
+			$days.textContent += units;
 		}
-		$score.textContent = $score.textContent.replace(/.{5}/g, '$&\n');
+		$days.textContent = $days.textContent.replace(/.{5}/g, '$&\n');
 		if (gameon) {
-			score++;
-			setTimeout(updateScore, dayDuration * 1000);
+			days++;
+			score.days++;
+			setTimeout(updateDays, dayDuration * 1000);
 		}
 	};
-	updateScore();
+	updateDays();
 	let updateFood = function() {
 		if (fish === 0 && meat === 0) {
 			die();
@@ -58,8 +74,10 @@ window.addEventListener('load', function load(event) {
 		if (gameon) {
 			if (meat > 0) {
 				meat--;
+				score.ate.meat++;
 			} else {
 				fish--;
+				score.ate.fish++;
 			}
 			setTimeout(updateFood, dayDuration * 1000);
 		}
@@ -87,6 +105,9 @@ window.addEventListener('load', function load(event) {
 	};
 	let exploring = function(cell) {
 		let island = atlas.onIsland(cell);
+		if (!cell.visited) {
+			score.islands++;
+		}
 		island.forEach((cell) => {
 			let meated = Math.random() < meatingProbability;
 			if (meated && meat < maxMeat && !cell.visited) {
@@ -117,6 +138,7 @@ window.addEventListener('load', function load(event) {
 		} else if (dx === 0 && dy < 0 && dz > 0) {
 			atlas.move('southeast');
 		}
+		score.move++;
 		if (path[1].type === 'water') {
 			fishing(path[1]);
 		} else if (path[1].type === 'island') {
