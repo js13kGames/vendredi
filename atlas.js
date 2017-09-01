@@ -47,6 +47,39 @@ let Atlas = function(args) {
 		return meshCells;
 	};
 
+	let onIsland = function(cell) {
+		let island = [{
+			cell,
+			visited: false
+		}];
+		let index = 0;
+		do {
+			island[index].visited = true;
+			for (let direction of Cell.DIRECTIONS) {
+				let neighbor = island[index].cell.neighbors[direction];
+				if (neighbor.type === 'island') {
+					let notStored = undefined === island.find(({cell}) => {
+						let cc = cell.coords;
+						let nc = neighbor.coords;
+						if (cc[0] === nc[0] && cc[1] === nc[1] && cc[2] === nc[2]) {
+							return true;
+						} else {
+							return false;
+						}
+					});
+					if (notStored) {
+						island.push({
+							cell: neighbor,
+							visited: false
+						});
+					}
+				}
+			}
+			index = island.findIndex(({visited}) => !visited);
+		} while (index !== -1);
+		return island.map(({cell}) => cell);
+	};
+
 	let findCell = function([tx, ty, tz]) {
 		let cell = this.center;
 		let [sx, sy, sz] = cell.coords;
@@ -154,6 +187,7 @@ let Atlas = function(args) {
 		onCircle,
 		onDisk,
 		onMesh,
+		onIsland,
 		findCell,
 		findCursorCell,
 		findPath,

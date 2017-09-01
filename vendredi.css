@@ -10,6 +10,7 @@
 	font-family: MayQueen;
 	src: url('mayqueen.ttf') format('truetype');
 }
+
 html, body {
 	margin: 0;
 	padding: 0;
@@ -43,7 +44,13 @@ html, body {
 	float: right;
 	font-family: Flood;
 	font-size: 200%;
+	text-align: right;
+}
+#food #fish {
 	color: rgb(128, 128, 237);
+}
+#food #meat {
+	color: rgb(237, 128, 128);
 }
 #dead {
 	display: none;
@@ -52,8 +59,8 @@ html, body {
 	margin-left: 20vw;
 	margin-right: 20vw;
 
-	background: repeating-linear-gradient(-1deg, #AA673A, #AA673A 15%, #64320F 17%, #AA673A 30%);
-	border-color: #64320F;
+	background: repeating-linear-gradient(1deg, #AA673A, #AA673A 15%, #64320F 17%, #AA673A 30%);
+	border-color: #341000;
 	border-left-width: 0.1ex;
 	border-top-width: 0.1ex;
 	border-right-width: 0.4ex;
@@ -64,7 +71,8 @@ html, body {
 	text-align: center;
 	font-family: Avocado;
 	font-size: 150%;
-	box-shadow: 1ex 1.5ex 10px black;
+	box-shadow: 1ex 1.5ex 16px black;
+	transform: rotate(3deg);
 }
 #dead #game-over {
 	font-size: 200%;

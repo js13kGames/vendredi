@@ -4,6 +4,7 @@ let Cell = function(args) {
 	let type = 'water';
 	let gradient = Perlin.generateGradient();
 	let elevation = 0;
+	let visited = false;
 
 	if (args) {
 		coords = args.coords;
@@ -123,6 +124,7 @@ let Cell = function(args) {
 		type,
 		gradient,
 		elevation,
+		visited,
 		reverseDirection,
 		nextDirection,
 		previousDirection,

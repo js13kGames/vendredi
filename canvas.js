@@ -33,9 +33,9 @@ let Canvas = function(args) {
 		let northeast = cell.neighbors['northeast'];
 		let southeast = cell.neighbors['southeast'];
 		let [x, y] = convertCoords.call(this, cell.pixelCoords());
+		this.context.fillStyle = cell.visited ? Canvas.COLORS.visited : Canvas.COLORS.island;
 		if (east && east.type === 'island') {
 			let [nx, ny] = convertCoords.call(this, east.pixelCoords());
-			this.context.fillStyle = Canvas.COLORS.island;
 			this.context.beginPath();
 			this.context.moveTo(x, y);
 			this.context.arc(x, y, canvas.unit/2.0, Math.PI/2.0, -Math.PI/2.0);
@@ -46,7 +46,6 @@ let Canvas = function(args) {
 		}
 		if (northeast && northeast.type === 'island') {
 			let [nx, ny] = convertCoords.call(this, northeast.pixelCoords());
-			this.context.fillStyle = Canvas.COLORS.island;
 			this.context.beginPath();
 			this.context.moveTo(x, y);
 			this.context.arc(x, y, canvas.unit/2.0, Math.PI/6.0, -5.0*Math.PI/6.0);
@@ -57,7 +56,6 @@ let Canvas = function(args) {
 		}
 		if (southeast && southeast.type === 'island') {
 			let [nx, ny] = convertCoords.call(this, southeast.pixelCoords());
-			this.context.fillStyle = Canvas.COLORS.island;
 			this.context.beginPath();
 			this.context.moveTo(x, y);
 			this.context.arc(x, y, canvas.unit/2.0, 5.0*Math.PI/6.0, -Math.PI/6.0);
@@ -66,7 +64,7 @@ let Canvas = function(args) {
 			this.context.fill();
 			this.context.closePath();
 		} else {
-			drawCircle.call(this, Canvas.COLORS.island).call(this, cell);
+			drawCircle.call(this, this.context.fillStyle).call(this, cell);
 		}
 	};
 
@@ -175,6 +173,7 @@ Canvas.COLORS = {
 	"background": 'rgb(240, 240, 240)',
 	"water": 'rgb(224, 224, 237)',
 	"island": 'rgb(128, 237, 128)',
+	"visited": 'rgb(32, 237, 32)',
 	"vendredi": 'rgb(186, 0, 0)',
 	"cursor": 'rgb(186, 128, 128)',
 	"path": 'rgb(192, 192, 237)'

@@ -1,10 +1,14 @@
 window.addEventListener('load', function load(event) {
-	let score = 0;
-	let food = 3;
-	let dayDuration = 1; // in seconds
-	let gameon = true;
-	let moving = false;
-	let movePerSecond = 10;
+	let score = 0; // How many days of survival by Vendredi
+	let fish = 3; // How many fish Vendredi has
+	let maxFish = 3; // Maximum fishes that Vendredi can keep
+	let meat = 0; // How many meat Vendredi has
+	let maxMeat = 5; // Maximum meat that Vendredi can keep
+	let dayDuration = 1; // How many seconds last a day in the game
+	let gameon = true; // Is the game actually running (if not, then probably Game over)
+	let moving = false; // Is Vendredi moving along a path currently
+	let movePerSecond = 10; // When moving along a path, move N cells per second
+	let fishingProbability = 0.1; // 10% chances to fish on any water cell
 	let atlas = Atlas({
 		size: 32,
 		meshSize: 4
@@ -15,7 +19,8 @@ window.addEventListener('load', function load(event) {
 	canvas.atlas = atlas;
 
 	let $score = document.getElementById('score');
-	let $food = document.getElementById('food');
+	let $fish = document.getElementById('fish');
+	let $meat = document.getElementById('meat');
 	let $dead = document.getElementById('dead');
 	let $finalDays = document.getElementById('final-days');
 
@@ -42,12 +47,19 @@ window.addEventListener('load', function load(event) {
 	};
 	updateScore();
 	let updateFood = function() {
-		if (food === 0) {
+		if (fish === 0 && meat === 0) {
 			die();
 		}
-		$food.textContent = 'b'.repeat(food);
+		fish = Math.min(fish, maxFish);
+		meat = Math.min(meat, maxMeat);
+		$fish.textContent = 'b'.repeat(fish);
+		$meat.textContent = 'c'.repeat(meat);
 		if (gameon) {
-			food--;
+			if (meat > 0) {
+				meat--;
+			} else {
+				fish--;
+			}
 			setTimeout(updateFood, dayDuration * 1000);
 		}
 	}
@@ -64,6 +76,22 @@ window.addEventListener('load', function load(event) {
 			updatePath(event.clientX, event.clientY);
 		}
 	});
+
+	let fishing = function(cell) {
+		let fished = Math.random() < fishingProbability;
+		if (fished) {
+			fish++;
+		}
+	};
+	let exploring = function(cell) {
+		let island = atlas.onIsland(cell);
+		island.forEach((cell) => {
+			if (!cell.visited) {
+				meat++;
+			}
+			cell.visited = true;
+		});
+	}
 
 	let moveOnPath = function(start, path) {
 		let direction = 'east';
@@ -84,6 +112,11 @@ window.addEventListener('load', function load(event) {
 			atlas.move('southwest');
 		} else if (dx === 0 && dy < 0 && dz > 0) {
 			atlas.move('southeast');
+		}
+		if (path[1].type === 'water') {
+			fishing(path[1]);
+		} else if (path[1].type === 'island') {
+			exploring(path[1]);
 		}
 		let time = performance.now();
 		if (path.length > 2) {
