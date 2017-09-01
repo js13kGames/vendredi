@@ -34,6 +34,7 @@ window.addEventListener('load', function load(event) {
 		if (units > 0) {
 			$score.textContent += units;
 		}
+		$score.textContent = $score.textContent.replace(/.{5}/g, '$&\n');
 		if (gameon) {
 			score++;
 			setTimeout(updateScore, dayDuration * 1000);
