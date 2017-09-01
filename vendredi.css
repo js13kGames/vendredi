@@ -36,15 +36,22 @@ html, body {
 	display: block;
 	float: left;
 	width: 20vw;
+	height: 100vh;
 	font-size: 200%;
 	font-family: MayQueen;
+
+	background: linear-gradient(90deg, #CCCCCC, rgb(240, 240, 240));
 }
 #food {
 	display: block;
 	float: right;
+	width: 20vw;
+	height: 100vh;
 	font-family: Flood;
 	font-size: 200%;
 	text-align: right;
+
+	background: linear-gradient(-90deg, #CCCCCC, rgb(240, 240, 240));
 }
 #food #fish {
 	color: rgb(128, 128, 237);
