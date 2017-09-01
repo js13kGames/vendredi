@@ -173,12 +173,11 @@ Canvas.COLORS = {
 	"background": 'rgb(240, 240, 240)',
 	"water": 'rgb(224, 224, 237)',
 	"island": 'rgb(128, 237, 128)',
-	"visited": 'rgb(32, 237, 32)',
+	"visited": 'rgb(16, 64, 16)',
 	"vendredi": 'rgb(186, 0, 0)',
 	"cursor": 'rgb(186, 128, 128)',
 	"path": 'rgb(192, 192, 237)'
 };
-
 
 window.addEventListener('load', () => {
 	let canvas = document.getElementById('canvas');
