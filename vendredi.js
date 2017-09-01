@@ -9,6 +9,7 @@ window.addEventListener('load', function load(event) {
 	let moving = false; // Is Vendredi moving along a path currently
 	let movePerSecond = 10; // When moving along a path, move N cells per second
 	let fishingProbability = 0.1; // 10% chances to fish on any water cell
+	let meatingProbability = 0.9; // 10% chances to fish on any water cell
 	let atlas = Atlas({
 		size: 32,
 		meshSize: 4
@@ -86,7 +87,8 @@ window.addEventListener('load', function load(event) {
 	let exploring = function(cell) {
 		let island = atlas.onIsland(cell);
 		island.forEach((cell) => {
-			if (!cell.visited) {
+			let meated = Math.random() < meatingProbability;
+			if (meated) {
 				meat++;
 			}
 			cell.visited = true;
