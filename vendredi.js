@@ -142,4 +142,8 @@ window.addEventListener('load', function load(event) {
 		}
 	};
 	window.requestAnimationFrame(render);
+
+	window.addEventListener('resize', (event) => {
+		canvas.draw();
+	});
 });
