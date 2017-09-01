@@ -59,6 +59,32 @@ html, body {
 #food #meat {
 	color: rgb(237, 128, 128);
 }
+
+@keyframes fadein {
+	from {
+		opacity: 0;
+		transform: scale(1.5) rotate(3deg);
+	}
+	50% {
+		transform: scale(0.8) rotate(3deg);
+	}
+	75% {
+		transform: scale(1.05) rotate(3deg);
+	}
+	87% {
+		transform: scale(0.95) rotate(3deg);
+	}
+	94% {
+		transform: scale(1.025) rotate(3deg);
+	}
+	97% {
+		transform: scale(0.975) rotate(3deg);
+	}
+	to {
+		opacity: 1;
+		transform: rotate(3deg);
+	}
+}
 #dead {
 	display: none;
 	padding: 1ex;
@@ -79,8 +105,11 @@ html, body {
 	font-family: Avocado;
 	font-size: 150%;
 	box-shadow: 1ex 1.5ex 16px black;
+
 	transform: rotate(3deg);
+	animation: fadein 0.2s ease;
 }
+
 #dead #game-over {
 	font-size: 200%;
 	color: rgb(186, 0, 0);
