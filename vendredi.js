@@ -80,16 +80,18 @@ window.addEventListener('load', function load(event) {
 
 	let fishing = function(cell) {
 		let fished = Math.random() < fishingProbability;
-		if (fished) {
+		if (fished && fish < maxFish) {
 			fish++;
+			canvas.foundFish(cell);
 		}
 	};
 	let exploring = function(cell) {
 		let island = atlas.onIsland(cell);
 		island.forEach((cell) => {
 			let meated = Math.random() < meatingProbability;
-			if (meated) {
+			if (meated && meat < maxMeat && !cell.visited) {
 				meat++;
+				canvas.foundMeat(cell);
 			}
 			cell.visited = true;
 		});
