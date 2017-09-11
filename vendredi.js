@@ -61,7 +61,6 @@ window.addEventListener('load', function load(event) {
 		$days.textContent = $days.textContent.replace(/.{5}/g, '$&\n');
 		if (gameon) {
 			score.days++;
-			setTimeout(updateDays, dayDuration * 1000);
 		}
 	};
 	updateDays();
@@ -81,7 +80,6 @@ window.addEventListener('load', function load(event) {
 				level.fish--;
 				score.ate.fish++;
 			}
-			setTimeout(updateFood, dayDuration * 1000);
 		}
 	}
 	updateFood();
@@ -148,6 +146,8 @@ window.addEventListener('load', function load(event) {
 		}
 		let time = performance.now();
 		if (path.length > 2) {
+			updateDays();
+			updateFood();
 			setTimeout(moveOnPath, start + 1000 / movePerSecond - time, start + 1000 / movePerSecond, path.slice(1));
 		} else {
 			moving = false;
