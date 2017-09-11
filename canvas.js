@@ -76,6 +76,14 @@ let Canvas = function(args) {
 		path.forEach((cell) => {
 			drawPathStep.call(this, cell);
 		});
+		this.context.save();
+		this.context.fillStyle = 'white';
+		this.context.globalAlpha = '0.67';
+		this.context.font = `128px Flood`;
+		this.context.textAlign = 'center';
+		this.context.textBaseline = 'middle';
+		this.context.fillText(`${path.length - 1}`, this.center.x, this.center.y);
+		this.context.restore();
 	}
 
 	let drawEdges = function() {
