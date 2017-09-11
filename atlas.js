@@ -1,6 +1,8 @@
 let Atlas = function(args) {
 	let size = 1;
 	let meshSize = 2;
+	let islandThreshold = 0.8;
+	let continentRadius = 100;
 	let center = Cell({
 		coords: [0, 0, 0]
 	});
@@ -15,7 +17,20 @@ let Atlas = function(args) {
 	let reveal = function() {
 		this.onDisk(this.size - this.meshSize).forEach((cell) => {
 			cell.reveal(this.meshSize);
-			if (cell.elevation > 0.8) {
+			// The probabiity of having islands will decrease as you go away of your original starting point
+			// The decreasing function is log-based and have the 2 following constraints
+			// f(0) = this.islandThreshold
+			// f(this.continentRadius) = 1
+			// Therefore, the function is the following
+			// f(x) = ln(sigma * x + 1) + this.islandThreshold
+			// with x being the distance from original starting point and
+			// sigma = (exp(1 - this.islandThreshold) - 1) / this.continentRadius
+			let distance = cell.distanceCells(new Cell({
+				coords: [0, 0, 0]
+			}));
+			let sigma = (Math.exp(1 - this.islandThreshold) - 1) / this.continentRadius;
+			let threshold = Math.log(sigma * distance + 1) + this.islandThreshold;
+			if (cell.elevation > threshold || distance >= this.continentRadius) {
 				cell.type = 'island';
 			}
 		});
@@ -180,6 +195,8 @@ let Atlas = function(args) {
 	return {
 		size,
 		meshSize,
+		islandThreshold,
+		continentRadius,
 		center,
 		cursor,
 		path,
