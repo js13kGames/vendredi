@@ -59,13 +59,27 @@ let Canvas = function(args) {
 		path.forEach((cell) => {
 			drawPathStep.call(this, cell);
 		});
+	}
+
+	let drawPathNumber = function(n, cell) {
 		this.context.save();
 		this.context.fillStyle = 'white';
-		this.context.globalAlpha = '0.67';
-		this.context.font = `128px Flood`;
+		this.context.globalAlpha = '0.5';
+		this.context.font = `bold 16px Flood`;
 		this.context.textAlign = 'center';
 		this.context.textBaseline = 'middle';
-		this.context.fillText(`${Math.max(0, path.length - 1)}`, this.center.x, this.center.y);
+		let size = 0.67;
+		let [x, y] = convertCoords.call(this, cell.pixelCoords());
+		let ny = y - size * Math.sqrt(2.0) * this.unit;
+		this.context.beginPath();
+		this.context.moveTo(x, y);
+		this.context.lineTo(x - size * this.unit * Math.sqrt(2.0) / 2.0, y - size * this.unit * Math.sqrt(2.0) / 2.0);
+		this.context.arc(x, ny, size * this.unit, 3.0 * Math.PI / 4.0, Math.PI / 4.0);
+		this.context.lineTo(x, y);
+		this.context.fill();
+		this.context.closePath();
+		this.context.fillStyle = 'black';
+		this.context.fillText(`${n}`, x, ny);
 		this.context.restore();
 	}
 
@@ -211,6 +225,9 @@ let Canvas = function(args) {
 		drawPath.call(this, this.atlas.path)
 		drawCursor.call(this, this.atlas.cursor);
 		drawVendredi.call(this, this.atlas.center);
+		if (this.atlas.path.length > 0) {
+			drawPathNumber.call(this, this.atlas.path.length - 1, this.atlas.path[this.atlas.path.length - 1]);
+		}
 		drawAnimations.call(this);
 	};
 
