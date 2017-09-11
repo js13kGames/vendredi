@@ -37,7 +37,7 @@ let Canvas = function(args) {
 			let [x, y] = convertCoords.call(this, cell.pixelCoords());
 			this.context.save();
 			this.context.fillStyle = color;
-			if (n && n.type !== 'water') {
+			if (n && n.type === cell.type) {
 				let [nx, ny] = convertCoords.call(this, n.pixelCoords());
 				let pre = ((6 - index) % 6) * 2;
 				let angle1 = (pre + 3) * Math.PI / 6.0;
