@@ -22,10 +22,10 @@ html, body {
 	font-family: flood;
 }
 .fish {
-	color: rgb(128, 128, 237);
+	color: rgb(64, 64, 237);
 }
 .meat {
-	color: rgb(237, 128, 128);
+	color: rgb(237, 32, 32);
 }
 
 #canvas {
