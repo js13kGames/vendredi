@@ -30,14 +30,14 @@ let Canvas = function(args) {
 	let drawCursor = drawCircle(Canvas.COLORS.cursor, 0.5);
 	let drawPathStep = drawCircle(Canvas.COLORS.path, 0.5);
 
-	let drawIsland = function(cell) {
+	let drawEarth = function(cell, color) {
 		let east = cell.neighbors['east'];
 		let northeast = cell.neighbors['northeast'];
 		let southeast = cell.neighbors['southeast'];
 		let [x, y] = convertCoords.call(this, cell.pixelCoords());
 		this.context.save();
-		this.context.fillStyle = cell.visited ? Canvas.COLORS.visited : Canvas.COLORS.island;
-		if (east && east.type === 'island') {
+		this.context.fillStyle = color;
+		if (east && east.type !== 'water') {
 			let [nx, ny] = convertCoords.call(this, east.pixelCoords());
 			this.context.beginPath();
 			this.context.moveTo(x, y);
@@ -47,7 +47,7 @@ let Canvas = function(args) {
 			this.context.fill();
 			this.context.closePath();
 		}
-		if (northeast && northeast.type === 'island') {
+		if (northeast && northeast.type !== 'water') {
 			let [nx, ny] = convertCoords.call(this, northeast.pixelCoords());
 			this.context.beginPath();
 			this.context.moveTo(x, y);
@@ -57,7 +57,7 @@ let Canvas = function(args) {
 			this.context.fill();
 			this.context.closePath();
 		}
-		if (southeast && southeast.type === 'island') {
+		if (southeast && southeast.type !== 'water') {
 			let [nx, ny] = convertCoords.call(this, southeast.pixelCoords());
 			this.context.beginPath();
 			this.context.moveTo(x, y);
@@ -214,7 +214,10 @@ let Canvas = function(args) {
 		this.reset();
 		this.atlas.onDisk(this.atlas.size).forEach((cell) => {
 			if (cell.type === 'island') {
-				drawIsland.call(this, cell);
+				drawEarth.call(this, cell, cell.visited ? Canvas.COLORS.visited : Canvas.COLORS.island);
+			}
+			if (cell.type === 'continent') {
+				drawEarth.call(this, cell, Canvas.COLORS.continent);
 			}
 		});
 		this.atlas.onDisk(this.atlas.size).forEach((cell) => {
@@ -255,6 +258,8 @@ Canvas.COLORS = {
 	"water": 'rgb(224, 224, 237)',
 	"island": 'rgb(128, 237, 128)',
 	"visited": 'rgb(16, 64, 16)',
+	"sand": 'rgb(237, 237, 128)',
+	"continent": 'rgb(128, 64, 0)',
 	"vendredi": 'rgb(186, 0, 0)',
 	"cursor": 'rgb(186, 128, 128)',
 	"path": 'rgb(192, 192, 237)'

@@ -10,15 +10,17 @@ window.addEventListener('load', function load(event) {
 	}
 	let level = {
 		id: 1,
-		fish: 3, // How many fish Vendredi has
-		maxFish: 3, // Maximum fishes that Vendredi can keep
+		fish: 10, // How many fish Vendredi has
+		maxFish: 10, // Maximum fishes that Vendredi can keep
 		fishingProbability: 0.1, // 10% chances to fish on any water cell
 		meat: 0, // How many meat Vendredi has
 		maxMeat: 5, // Maximum meat that Vendredi can keep
 		meatingProbability: 0.9, // 10% chances to fish on any water cell
 		atlas: {
 			size: 16,
-			meshSize: 4
+			meshSize: 4,
+			islandThreshold: 0.8,
+			continentRadius: 10
 		}
 	};
 	let dayDuration = 1; // How many seconds last a day in the game

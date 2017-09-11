@@ -10,8 +10,10 @@ let Atlas = function(args) {
 	let path = [];
 
 	if (args) {
-		size = args.size;
-		meshSize = args.meshSize;
+		size = args.size || size;
+		meshSize = args.meshSize || meshSize;
+		islandThreshold = args.islandThreshold || islandThreshold;
+		continentRadius = args.continentRadius || continentRadius;
 	}
 
 	let reveal = function() {
@@ -30,8 +32,11 @@ let Atlas = function(args) {
 			}));
 			let sigma = (Math.exp(1 - this.islandThreshold) - 1) / this.continentRadius;
 			let threshold = Math.log(sigma * distance + 1) + this.islandThreshold;
-			if (cell.elevation > threshold || distance >= this.continentRadius) {
+			if (cell.elevation > threshold) {
 				cell.type = 'island';
+			}
+			if (distance >= this.continentRadius) {
+				cell.type = 'continent';
 			}
 		});
 	};
