@@ -46,16 +46,16 @@ window.addEventListener('load', function load(event) {
 		document.getElementById('final-score').style.display = 'block';
 	}
 	let die = function() {
-		displayScore();
 		for (let element of document.getElementsByClassName('dead')) {
 			element.style.display = 'inline-block';
 		};
+		displayScore();
 	};
 	let saved = function() {
-		displayScore();
 		for (let element of document.getElementsByClassName('alive')) {
 			element.style.display = 'inline-block';
 		};
+		displayScore();
 	}
 	let updateDays = function() {
 		let tens = Math.floor(score.days/10);
