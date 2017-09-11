@@ -31,45 +31,28 @@ let Canvas = function(args) {
 	let drawPathStep = drawCircle(Canvas.COLORS.path, 0.5);
 
 	let drawEarth = function(cell, color) {
-		let east = cell.neighbors['east'];
-		let northeast = cell.neighbors['northeast'];
-		let southeast = cell.neighbors['southeast'];
-		let [x, y] = convertCoords.call(this, cell.pixelCoords());
-		this.context.save();
-		this.context.fillStyle = color;
-		if (east && east.type !== 'water') {
-			let [nx, ny] = convertCoords.call(this, east.pixelCoords());
-			this.context.beginPath();
-			this.context.moveTo(x, y);
-			this.context.arc(x, y, canvas.unit/2.0, Math.PI/2.0, -Math.PI/2.0);
-			this.context.arc(nx, ny, canvas.unit/2.0, -Math.PI/2.0, Math.PI/2.0);
-			this.context.arc(x, y, canvas.unit/2.0, Math.PI/2.0, -Math.PI/2.0);
-			this.context.fill();
-			this.context.closePath();
+		for (let direction of Cell.DIRECTIONS) {
+			let index = Cell.DIRECTIONS.findIndex((d) => d === direction);
+			let n = cell.neighbors[direction];
+			let [x, y] = convertCoords.call(this, cell.pixelCoords());
+			this.context.save();
+			this.context.fillStyle = color;
+			if (n && n.type !== 'water') {
+				let [nx, ny] = convertCoords.call(this, n.pixelCoords());
+				let pre = ((6 - index) % 6) * 2;
+				let angle1 = (pre + 3) * Math.PI / 6.0;
+				let angle2 = (pre - 3) * Math.PI / 6.0;
+				this.context.beginPath();
+				this.context.moveTo(x, y);
+				this.context.arc(x, y, canvas.unit/2.0, angle1, angle2);
+				this.context.arc(nx, ny, canvas.unit/2.0, angle2, angle1);
+				this.context.arc(x, y, canvas.unit/2.0, angle1, angle2);
+				this.context.fill();
+				this.context.closePath();
+			} else {
+				drawCircle.call(this, this.context.fillStyle).call(this, cell);
+			}
 		}
-		if (northeast && northeast.type !== 'water') {
-			let [nx, ny] = convertCoords.call(this, northeast.pixelCoords());
-			this.context.beginPath();
-			this.context.moveTo(x, y);
-			this.context.arc(x, y, canvas.unit/2.0, Math.PI/6.0, -5.0*Math.PI/6.0);
-			this.context.arc(nx, ny, canvas.unit/2.0, -5.0*Math.PI/6.0, Math.PI/6.0);
-			this.context.arc(x, y, canvas.unit/2.0, Math.PI/6.0, -5.0*Math.PI/6.0);
-			this.context.fill();
-			this.context.closePath();
-		}
-		if (southeast && southeast.type !== 'water') {
-			let [nx, ny] = convertCoords.call(this, southeast.pixelCoords());
-			this.context.beginPath();
-			this.context.moveTo(x, y);
-			this.context.arc(x, y, canvas.unit/2.0, 5.0*Math.PI/6.0, -Math.PI/6.0);
-			this.context.arc(nx, ny, canvas.unit/2.0, -Math.PI/6.0, 5.0*Math.PI/6.0);
-			this.context.arc(x, y, canvas.unit/2.0, 5.0*Math.PI/6.0, -Math.PI/6.0);
-			this.context.fill();
-			this.context.closePath();
-		} else {
-			drawCircle.call(this, this.context.fillStyle).call(this, cell);
-		}
-		this.context.restore();
 	};
 
 	let drawPath = function(path) {
@@ -82,7 +65,7 @@ let Canvas = function(args) {
 		this.context.font = `128px Flood`;
 		this.context.textAlign = 'center';
 		this.context.textBaseline = 'middle';
-		this.context.fillText(`${path.length - 1}`, this.center.x, this.center.y);
+		this.context.fillText(`${Math.max(0, path.length - 1)}`, this.center.x, this.center.y);
 		this.context.restore();
 	}
 
@@ -212,7 +195,7 @@ let Canvas = function(args) {
 
 	let draw = function() {
 		this.reset();
-		this.atlas.onDisk(this.atlas.size).forEach((cell) => {
+		this.atlas.onDisk(this.atlas.size - 1).forEach((cell) => {
 			if (cell.type === 'island') {
 				drawEarth.call(this, cell, cell.visited ? Canvas.COLORS.visited : Canvas.COLORS.island);
 			}
