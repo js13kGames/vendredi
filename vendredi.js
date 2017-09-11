@@ -1,6 +1,6 @@
 window.addEventListener('load', function load(event) {
 	let score = {
-		days: 0,
+		days: 0, // How many days of survival by Vendredi
 		ate: {
 			fish: 0,
 			meat: 0
@@ -8,21 +8,24 @@ window.addEventListener('load', function load(event) {
 		islands: 0,
 		move: 0
 	}
-	let days = 0; // How many days of survival by Vendredi
-	let fish = 3; // How many fish Vendredi has
-	let maxFish = 3; // Maximum fishes that Vendredi can keep
-	let meat = 0; // How many meat Vendredi has
-	let maxMeat = 5; // Maximum meat that Vendredi can keep
+	let level = {
+		id: 1,
+		fish: 3, // How many fish Vendredi has
+		maxFish: 3, // Maximum fishes that Vendredi can keep
+		fishingProbability: 0.1, // 10% chances to fish on any water cell
+		meat: 0, // How many meat Vendredi has
+		maxMeat: 5, // Maximum meat that Vendredi can keep
+		meatingProbability: 0.9, // 10% chances to fish on any water cell
+		atlas: {
+			size: 16,
+			meshSize: 4
+		}
+	};
 	let dayDuration = 1; // How many seconds last a day in the game
 	let gameon = true; // Is the game actually running (if not, then probably Game over)
 	let moving = false; // Is Vendredi moving along a path currently
 	let movePerSecond = 10; // When moving along a path, move N cells per second
-	let fishingProbability = 0.1; // 10% chances to fish on any water cell
-	let meatingProbability = 0.9; // 10% chances to fish on any water cell
-	let atlas = Atlas({
-		size: 32,
-		meshSize: 4
-	});
+	let atlas = Atlas(level.atlas);
 	atlas.generateAtlas();
 
 	let canvas = document.getElementById('canvas');
@@ -46,8 +49,8 @@ window.addEventListener('load', function load(event) {
 		$dead.style.display = 'block';
 	}
 	let updateDays = function() {
-		let tens = Math.floor(days/10);
-		let units = days % 10;
+		let tens = Math.floor(score.days/10);
+		let units = score.days % 10;
 		$days.textContent = '';
 		if (tens > 0) {
 			$days.textContent = '55'.repeat(tens);
@@ -57,26 +60,25 @@ window.addEventListener('load', function load(event) {
 		}
 		$days.textContent = $days.textContent.replace(/.{5}/g, '$&\n');
 		if (gameon) {
-			days++;
 			score.days++;
 			setTimeout(updateDays, dayDuration * 1000);
 		}
 	};
 	updateDays();
 	let updateFood = function() {
-		if (fish === 0 && meat === 0) {
+		if (level.fish === 0 && level.meat === 0) {
 			die();
 		}
-		fish = Math.min(fish, maxFish);
-		meat = Math.min(meat, maxMeat);
-		$fish.textContent = 'b'.repeat(fish);
-		$meat.textContent = 'c'.repeat(meat);
+		level.fish = Math.min(level.fish, level.maxFish);
+		level.meat = Math.min(level.meat, level.maxMeat);
+		$fish.textContent = 'b'.repeat(level.fish);
+		$meat.textContent = 'c'.repeat(level.meat);
 		if (gameon) {
-			if (meat > 0) {
-				meat--;
+			if (level.meat > 0) {
+				level.meat--;
 				score.ate.meat++;
 			} else {
-				fish--;
+				level.fish--;
 				score.ate.fish++;
 			}
 			setTimeout(updateFood, dayDuration * 1000);
@@ -97,9 +99,9 @@ window.addEventListener('load', function load(event) {
 	});
 
 	let fishing = function(cell) {
-		let fished = Math.random() < fishingProbability;
-		if (fished && fish < maxFish) {
-			fish++;
+		let fished = Math.random() < level.fishingProbability;
+		if (fished && level.fish < level.maxFish) {
+			level.fish++;
 			canvas.foundFish(cell);
 		}
 	};
@@ -109,9 +111,9 @@ window.addEventListener('load', function load(event) {
 			score.islands++;
 		}
 		island.forEach((cell) => {
-			let meated = Math.random() < meatingProbability;
-			if (meated && meat < maxMeat && !cell.visited) {
-				meat++;
+			let meated = Math.random() < level.meatingProbability;
+			if (meated && level.meat < level.maxMeat && !cell.visited) {
+				level.meat++;
 				canvas.foundMeat(cell);
 			}
 			cell.visited = true;
