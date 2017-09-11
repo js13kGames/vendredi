@@ -17,7 +17,7 @@ let Atlas = function(args) {
 	}
 
 	let reveal = function() {
-		this.onDisk(this.size - this.meshSize).forEach((cell) => {
+		this.onDisk(this.size).forEach((cell) => {
 			cell.reveal(this.meshSize);
 			// The probabiity of having islands will decrease as you go away of your original starting point
 			// The decreasing function is log-based and have the 2 following constraints
@@ -42,7 +42,7 @@ let Atlas = function(args) {
 	};
 
 	let generateAtlas = function() {
-		for (let i = 0; i < this.size; i++) {
+		for (let i = 0; i < this.size + this.meshSize; i++) {
 			this.onCircle(i).forEach((cell) => cell.createNeighbors());
 		}
 		reveal.call(this)
@@ -58,7 +58,7 @@ let Atlas = function(args) {
 
 	let onMesh = function() {
 		let meshCells = [];
-		this.onDisk(this.size + this.meshSize).forEach((cell) => {
+		this.onDisk(this.size).forEach((cell) => {
 			let [x, y, z] = cell.coords;
 			if ((Math.abs(x) % this.meshSize === 0) && (Math.abs(y) % this.meshSize === 0) && (Math.abs(z) % this.meshSize === 0)) {
 				meshCells.push(cell);
@@ -185,7 +185,7 @@ let Atlas = function(args) {
 	};
 
 	let move = function(direction) {
-		this.onCircle(this.size).forEach((cell) => {
+		this.onCircle(this.size + this.meshSize).forEach((cell) => {
 			let index = Cell.DIRECTIONS.indexOf(direction);
 			let dir1 = Cell.DIRECTIONS[(index + 2) % 6];
 			let dir2 = Cell.DIRECTIONS[(index + 4) % 6];
