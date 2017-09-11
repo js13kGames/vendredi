@@ -167,21 +167,36 @@ let Canvas = function(args) {
 		this.animations = this.animations.filter((animation) => performance.now() - animation.start < animationTime * 1000);
 		this.animations.forEach((animation) => {
 			let ratio = (performance.now() - animation.start) / (animationTime * 1000);
-			this.context.save();
-			let size = Math.floor(8 + (32 - 8) * (1 - ratio));
-			this.context.font = `${size}px Flood`;
-			this.context.globalAlpha = 1 - ratio * ratio;
-			let symbol = '';
-			if (animation.type === 'fish') {
-				symbol = 'b';
-				this.context.fillStyle = 'rgb(128, 128, 237)';
-			} else if (animation.type === 'meat') {
-				symbol = 'c';
-				this.context.fillStyle = 'rgb(237, 128, 128)';
-			}
+			let size = Math.floor(32 * (1 - ratio));
 			let [x, y] = convertCoords.call(this, animation.cell.pixelCoords());
 			x += ratio * animationMove;
 			y -= ratio * animationMove;
+			this.context.save();
+			this.context.globalAlpha = 1 - ratio * ratio;
+			this.context.fillStyle = 'white';
+			this.context.strokeStyle = 'black';
+			this.context.lineWidth = '2';
+			this.context.beginPath();
+			this.context.arc(x, y, this.unit * (1 - ratio), 0, 2.0*Math.PI);
+			this.context.fill();
+			this.context.stroke();
+			this.context.closePath();
+			this.context.restore();
+			this.context.save();
+			let symbol = '';
+			if (animation.type === 'fish') {
+				symbol = 'b';
+				this.context.fillStyle = 'rgb(64, 64, 237)';
+			} else if (animation.type === 'meat') {
+				symbol = 'c';
+				this.context.fillStyle = 'rgb(237, 32, 32)';
+			}
+			this.context.strokeStyle = 'black';
+			this.context.lineWidth = '1';
+			this.context.globalAlpha = 1 - ratio * ratio;
+			this.context.textAlign = 'center';
+			this.context.textBaseline = 'middle';
+			this.context.font = `${size}px Flood`;
 			this.context.fillText(symbol, x, y);
 			this.context.restore();
 		});
