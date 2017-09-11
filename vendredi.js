@@ -36,19 +36,26 @@ window.addEventListener('load', function load(event) {
 	let $days = document.getElementById('days');
 	let $fish = document.getElementById('fish');
 	let $meat = document.getElementById('meat');
-	let $dead = document.getElementById('dead');
-	let $finalDays = document.getElementById('final-days');
-	let $finalIslands = document.getElementById('final-islands');
-	let $finalFish = document.getElementById('final-fish');
-	let $finalMeat = document.getElementById('final-meat');
 
-	let die = function() {
+	let displayScore = function() {
 		gameon = false;
-		$finalDays.textContent = score.days;
-		$finalIslands.textContent = score.islands;
-		$finalFish.textContent = score.ate.fish;
-		$finalMeat.textContent = score.ate.meat;
-		$dead.style.display = 'block';
+		document.getElementById('final-days').textContent = score.days;
+		document.getElementById('final-islands').textContent = score.islands;
+		document.getElementById('final-fish').textContent = score.ate.fish;
+		document.getElementById('final-meat').textContent = score.ate.meat;
+		document.getElementById('final-score').style.display = 'block';
+	}
+	let die = function() {
+		displayScore();
+		for (let element of document.getElementsByClassName('dead')) {
+			element.style.display = 'inline-block';
+		};
+	};
+	let saved = function() {
+		displayScore();
+		for (let element of document.getElementsByClassName('alive')) {
+			element.style.display = 'inline-block';
+		};
 	}
 	let updateDays = function() {
 		let tens = Math.floor(score.days/10);
@@ -145,6 +152,8 @@ window.addEventListener('load', function load(event) {
 			fishing(path[1]);
 		} else if (path[1].type === 'island') {
 			exploring(path[1]);
+		} else if (path[1].type === 'continent') {
+			saved();
 		}
 		let time = performance.now();
 		if (path.length > 2) {

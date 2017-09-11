@@ -90,7 +90,7 @@ html, body {
 		transform: rotate(3deg);
 	}
 }
-#dead {
+#final-score {
 	display: none;
 	padding: 1ex;
 	margin-top: 25vh;
@@ -115,16 +115,24 @@ html, body {
 	animation: fadein 0.2s ease;
 }
 
-#dead #game-over {
+.dead, .alive {
+	display: none;
+}
+#final-score #result {
 	font-size: 200%;
+}
+#final-score #result .dead {
 	color: rgb(186, 0, 0);
 }
-#dead #final-score-islands,
-#dead #final-score-food {
+#final-score #result .alive {
+	color: rgb(64, 186, 64);
+}
+#final-score #final-score-islands,
+#final-score #final-score-food {
 	font-size: 50%;
 }
-#dead #final-score-food .fish,
-#dead #final-score-food .meat {
+#final-score #final-score-food .fish,
+#final-score #final-score-food .meat {
 	padding-left: 0.1em;
 	font-size: 140%;
 }
