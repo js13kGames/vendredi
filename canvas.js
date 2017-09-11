@@ -241,7 +241,6 @@ Canvas.COLORS = {
 	"water": 'rgb(224, 224, 237)',
 	"island": 'rgb(128, 237, 128)',
 	"visited": 'rgb(16, 64, 16)',
-	"sand": 'rgb(237, 237, 128)',
 	"continent": 'rgb(128, 64, 0)',
 	"vendredi": 'rgb(186, 0, 0)',
 	"cursor": 'rgb(186, 128, 128)',
