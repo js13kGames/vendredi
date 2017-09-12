@@ -1,4 +1,11 @@
 let Canvas = function(args) {
+	let icons = {
+		fish: new Image(),
+		meat: new Image()
+	};
+	icons['fish'].src = './fish.svg';
+	icons['meat'].src = './meat.svg';
+
 	let reset = function() {
 		this.context.fillStyle = Canvas.COLORS.background;
 		this.context.fillRect(0, 0, this.width, this.height);
@@ -65,7 +72,7 @@ let Canvas = function(args) {
 		this.context.save();
 		this.context.fillStyle = 'white';
 		this.context.globalAlpha = '0.5';
-		this.context.font = `bold 16px Flood`;
+		this.context.font = 'bold 16px sans-serif';
 		this.context.textAlign = 'center';
 		this.context.textBaseline = 'middle';
 		let size = 0.67;
@@ -185,7 +192,7 @@ let Canvas = function(args) {
 				this.context.arc(nx, ny, 0.67 * this.unit, Math.PI / 2.0, -Math.PI / 2.0);
 				this.context.fill();
 				this.context.closePath();
-				this.context.font = 'bold 16px Flood';
+				this.context.font = 'bold 16px sans-serif';
 				this.context.fillStyle = 'black';
 				this.context.textAlign = 'center';
 				this.context.textBaseline = 'middle';
@@ -197,21 +204,19 @@ let Canvas = function(args) {
 				this.context.closePath();
 			}
 			this.context.restore();
-			let symbol = '';
-			if (animation.type === 'fish') {
-				symbol = 'b';
-			} else if (animation.type === 'crab') {
-				symbol = 'c';
-			}
+			let icon = animation.type === 'meat' ? icons['meat'] : icons['fish'];
 			this.context.save();
-			this.context.fillStyle = 'black';
-			this.context.strokeStyle = 'black';
-			this.context.lineWidth = '1';
 			this.context.globalAlpha = 1 - ratio * ratio;
-			this.context.textAlign = 'center';
-			this.context.textBaseline = 'middle';
-			this.context.font = '32px Flood';
-			this.context.fillText(symbol, x, y);
+			let width = icon.naturalWidth;
+			let height = icon.naturalHeight;
+			if (width > height) {
+				height = this.unit * height / width;
+				width = this.unit;
+			} else {
+				width = this.unit * width / height;
+				height = this.unit;
+			}
+			this.context.drawImage(icon, x - width / 2.0, y - height / 2.0, width, height);
 			this.context.restore();
 		});
 	}
@@ -247,9 +252,9 @@ let Canvas = function(args) {
 			start: performance.now()
 		});
 	};
-	let foundCrab = function(cell, number) {
+	let foundMeat = function(cell, number) {
 		this.animations.push({
-			type: 'crab',
+			type: 'meat',
 			number,
 			cell,
 			start: performance.now()
@@ -260,7 +265,7 @@ let Canvas = function(args) {
 		reset,
 		draw,
 		foundFish,
-		foundCrab
+		foundMeat
 	};
 };
 Canvas.COLORS = {

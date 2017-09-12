@@ -4,9 +4,9 @@ window.addEventListener('load', function load(event) {
 			fish: 5, // How many fish Vendredi has
 			maxFish: 5, // Maximum fishes that Vendredi can keep
 			fishingProbability: 0.5, // 50% chances to fish on any water cell
-			crab: 0, // How many crab Vendredi has
-			maxCrab: 5, // Maximum crab that Vendredi can keep
-			crabingProbability: 0.9, // 10% chances to fish on any water cell
+			meat: 0, // How many meat Vendredi has
+			maxMeat: 5, // Maximum meat that Vendredi can keep
+			meatingProbability: 0.9, // 10% chances to fish on any water cell
 			atlas: {
 				size: 16,
 				meshSize: 4,
@@ -19,7 +19,7 @@ window.addEventListener('load', function load(event) {
 		days: 0, // How many days of survival by Vendredi
 		ate: {
 			fish: 0,
-			crab: 0
+			meat: 0
 		},
 		islands: 0,
 		move: 0
@@ -40,7 +40,7 @@ window.addEventListener('load', function load(event) {
 		document.getElementById('final-days').textContent = score.days;
 		document.getElementById('final-islands').textContent = score.islands;
 		document.getElementById('final-fish').textContent = score.ate.fish;
-		document.getElementById('final-crab').textContent = score.ate.crab;
+		document.getElementById('final-meat').textContent = score.ate.meat;
 		document.getElementById('final-score').style.display = 'block';
 	};
 
@@ -81,15 +81,15 @@ window.addEventListener('load', function load(event) {
 				cell.visited = true;
 			});
 		}
-		let crabs = 0;
-		for (let i = 0; i < level.maxCrab; i++) {
-			let crabed = Math.random() < level.crabingProbability;
-			if (crabed && level.crab + crabs < level.maxCrab) {
-				crabs++;
+		let meats = 0;
+		for (let i = 0; i < level.maxMeat; i++) {
+			let meated = Math.random() < level.meatingProbability;
+			if (meated && level.meat + meats < level.maxMeat) {
+				meats++;
 			}
 		}
-		level.crab += crabs;
-		canvas.foundCrab(cell, crabs);
+		level.meat += meats;
+		canvas.foundMeat(cell, meats);
 	};
 
 	let move = function(first, second) {
@@ -115,9 +115,9 @@ window.addEventListener('load', function load(event) {
 		// Update days
 		score.days++;
 		// Update food
-		if (level.crab > 0) {
-			level.crab--;
-			score.ate.crab++;
+		if (level.meat > 0) {
+			level.meat--;
+			score.ate.meat++;
 		} else {
 			level.fish--;
 			score.ate.fish++;
@@ -139,7 +139,7 @@ window.addEventListener('load', function load(event) {
 		if (second.type === 'continent') {
 			saved();
 			return;
-		} else if (level.fish === 0 && level.crab === 0) {
+		} else if (level.fish === 0 && level.meat === 0) {
 			die();
 			return;
 		}
@@ -155,18 +155,18 @@ window.addEventListener('load', function load(event) {
 		canvas.draw();
 		// Update food
 		level.fish = Math.min(level.fish, level.maxFish);
-		level.crab = Math.min(level.crab, level.maxCrab);
+		level.meat = Math.min(level.meat, level.maxMeat);
 		document.getElementById('fish').textContent = level.fish;
-		document.getElementById('crab').textContent = level.crab;
+		document.getElementById('meat').textContent = level.meat;
 		if (level.fish >= level.maxFish) {
 			document.getElementById('max-fish').style.display = 'inline-block';
 		} else {
 			document.getElementById('max-fish').style.display = 'none';
 		}
-		if (level.crab >= level.maxCrab) {
-			document.getElementById('max-crab').style.display = 'inline-block';
+		if (level.meat >= level.maxMeat) {
+			document.getElementById('max-meat').style.display = 'inline-block';
 		} else {
-			document.getElementById('max-crab').style.display = 'none';
+			document.getElementById('max-meat').style.display = 'none';
 		}
 		if (gameon) {
 			window.requestAnimationFrame(render);
