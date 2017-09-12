@@ -11,7 +11,7 @@ window.addEventListener('load', function load(event) {
 				size: 16,
 				meshSize: 4,
 				islandThreshold: 0.8,
-				continentRadius: 10
+				continentRadius: 8
 			}
 		}
 	];
@@ -23,6 +23,24 @@ window.addEventListener('load', function load(event) {
 
 	let atlas = undefined;
 	let canvas = document.getElementById('canvas');
+
+	let generateLevel = function() {
+		let current = levels[levels.length - 1];
+		levels.push({
+			fish: current.fish,
+			maxFish: current.maxFish,
+			fishingProbability: current.fishingProbability,
+			meat: current.meat,
+			maxMeat: current.maxMeat,
+			meatingProbability: current.meatingProbability,
+			atlas: {
+				size: current.atlas.size,
+				meshSize: current.atlas.meshSize,
+				islandThreshold: current.atlas.islandThreshold,
+				continentRadius: current.atlas.continentRadius + 8
+			}
+		});
+	}
 
 	let loadLevel = function(level) {
 		score = {
@@ -53,6 +71,7 @@ window.addEventListener('load', function load(event) {
 		for (let element of document.getElementsByClassName('alive')) {
 			element.style.display = 'none';
 		}
+		document.getElementById('next').style.display = 'none';
 		moving = false;
 		gameon = true;
 	};
@@ -77,6 +96,7 @@ window.addEventListener('load', function load(event) {
 		for (let element of document.getElementsByClassName('alive')) {
 			element.style.display = 'inline-block';
 		};
+		document.getElementById('next').style.display = 'inline-block';
 		renderScore();
 	}
 
@@ -216,6 +236,18 @@ window.addEventListener('load', function load(event) {
 
 	document.getElementById('replay').addEventListener('click', (event) => {
 		event.stopPropagation();
+		loadLevel(levels[levelID]);
+		reset();
+		window.requestAnimationFrame(render);
+	});
+
+	document.getElementById('next').addEventListener('click', (event) => {
+		event.stopPropagation();
+		if (levelID === levels.length - 1) {
+			generateLevel();
+			levelID++;
+			console.log(levels[levelID]);
+		}
 		loadLevel(levels[levelID]);
 		reset();
 		window.requestAnimationFrame(render);
