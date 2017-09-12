@@ -186,7 +186,7 @@ let Canvas = function(args) {
 			let symbol = '';
 			if (animation.type === 'fish') {
 				symbol = 'b';
-			} else if (animation.type === 'meat') {
+			} else if (animation.type === 'crab') {
 				symbol = 'c';
 			}
 			this.context.save();
@@ -233,9 +233,9 @@ let Canvas = function(args) {
 			start: performance.now()
 		});
 	};
-	let foundMeat = function(cell) {
+	let foundCrab = function(cell) {
 		this.animations.push({
-			type: 'meat',
+			type: 'crab',
 			cell,
 			start: performance.now()
 		});
@@ -245,7 +245,7 @@ let Canvas = function(args) {
 		reset,
 		draw,
 		foundFish,
-		foundMeat
+		foundCrab
 	};
 };
 Canvas.COLORS = {

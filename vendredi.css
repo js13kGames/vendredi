@@ -20,7 +20,7 @@ html, body {
 .fish {
 	color: black;
 }
-.meat {
+.crab {
 	color: black;
 }
 
@@ -133,7 +133,7 @@ html, body {
 	font-size: 50%;
 }
 #final-score #final-score-food .fish,
-#final-score #final-score-food .meat {
+#final-score #final-score-food .crab {
 	padding-left: 0.1em;
 	font-size: 140%;
 }
