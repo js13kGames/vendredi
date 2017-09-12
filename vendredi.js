@@ -15,32 +15,54 @@ window.addEventListener('load', function load(event) {
 			}
 		}
 	];
-	let score = {
-		days: 0, // How many days of survival by Vendredi
-		ate: {
-			fish: 0,
-			meat: 0
-		},
-		islands: 0,
-		move: 0
-	};
+	let score = {};
 	let levelID = 0;
 	let gameon = true; // Is the game actually running (if not, then probably Game over)
 	let moving = false; // Is Vendredi moving along a path currently
 	let movePerSecond = 10; // When moving along a path, move N cells per second
 
-	let atlas = Atlas(levels[levelID].atlas);
-	atlas.generateAtlas();
-
+	let atlas = undefined;
 	let canvas = document.getElementById('canvas');
-	canvas.atlas = atlas;
+
+	let loadLevel = function(level) {
+		score = {
+			days: 0,
+			food: {
+				fish: {
+					number: level.fish,
+					ate: 0
+				},
+				meat: {
+					number: level.meat,
+					ate: 0
+				}
+			},
+			islands: 0,
+			move: 0
+		};
+		atlas = Atlas(level.atlas);
+		atlas.generateAtlas();
+		canvas.atlas = atlas;
+	};
+
+	let reset = function() {
+		document.getElementById('final-score').style.display = 'none';
+		for (let element of document.getElementsByClassName('dead')) {
+			element.style.display = 'none';
+		}
+		for (let element of document.getElementsByClassName('alive')) {
+			element.style.display = 'none';
+		}
+		moving = false;
+		gameon = true;
+	};
 
 	let renderScore = function() {
 		gameon = false;
 		document.getElementById('final-days').textContent = score.days;
 		document.getElementById('final-islands').textContent = score.islands;
-		document.getElementById('final-fish').textContent = score.ate.fish;
-		document.getElementById('final-meat').textContent = score.ate.meat;
+		document.getElementById('final-fish').textContent = score.food.fish.ate;
+		document.getElementById('final-meat').textContent = score.food.meat.ate;
 		document.getElementById('final-score').style.display = 'block';
 	};
 
@@ -67,8 +89,8 @@ window.addEventListener('load', function load(event) {
 
 	let fishing = function(cell) {
 		let fished = Math.random() < levels[levelID].fishingProbability;
-		if (fished && levels[levelID].fish < levels[levelID].maxFish) {
-			levels[levelID].fish++;
+		if (fished && score.food.fish.number < levels[levelID].maxFish) {
+			score.food.fish.number++;
 			canvas.foundFish(cell);
 		}
 	};
@@ -84,11 +106,11 @@ window.addEventListener('load', function load(event) {
 		let meats = 0;
 		for (let i = 0; i < levels[levelID].maxMeat; i++) {
 			let meated = Math.random() < levels[levelID].meatingProbability;
-			if (meated && levels[levelID].meat + meats < levels[levelID].maxMeat) {
+			if (meated && score.food.meat.number + meats < levels[levelID].maxMeat) {
 				meats++;
 			}
 		}
-		levels[levelID].meat += meats;
+		score.food.meat.number += meats;
 		canvas.foundMeat(cell, meats);
 	};
 
@@ -115,12 +137,12 @@ window.addEventListener('load', function load(event) {
 		// Update days
 		score.days++;
 		// Update food
-		if (levels[levelID].meat > 0) {
-			levels[levelID].meat--;
-			score.ate.meat++;
+		if (score.food.meat.number > 0) {
+			score.food.meat.number--;
+			score.food.meat.ate++;
 		} else {
-			levels[levelID].fish--;
-			score.ate.fish++;
+			score.food.fish.number--;
+			score.food.fish.ate++;
 		}
 	};
 
@@ -139,12 +161,12 @@ window.addEventListener('load', function load(event) {
 		if (second.type === 'continent') {
 			saved();
 			return;
-		} else if (levels[levelID].fish === 0 && levels[levelID].meat === 0) {
+		} else if (score.food.fish.number === 0 && score.food.meat.number === 0) {
 			die();
 			return;
 		}
 		let time = performance.now();
-		if (path.length > 2) {
+		if (gameon && path.length > 2) {
 			setTimeout(gameLoop, start + 1000 / movePerSecond - time, start + 1000 / movePerSecond, path.slice(1));
 		} else {
 			moving = false;
@@ -154,16 +176,16 @@ window.addEventListener('load', function load(event) {
 	let render = function(time) {
 		canvas.draw();
 		// Update food
-		levels[levelID].fish = Math.min(levels[levelID].fish, levels[levelID].maxFish);
-		levels[levelID].meat = Math.min(levels[levelID].meat, levels[levelID].maxMeat);
-		document.getElementById('fish').textContent = levels[levelID].fish;
-		document.getElementById('meat').textContent = levels[levelID].meat;
-		if (levels[levelID].fish >= levels[levelID].maxFish) {
+		score.food.fish.number = Math.min(score.food.fish.number, levels[levelID].maxFish);
+		score.food.meat.number = Math.min(score.food.meat.number, levels[levelID].maxMeat);
+		document.getElementById('fish').textContent = score.food.fish.number;
+		document.getElementById('meat').textContent = score.food.meat.number;
+		if (score.food.fish.number >= levels[levelID].maxFish) {
 			document.getElementById('max-fish').style.display = 'inline-block';
 		} else {
 			document.getElementById('max-fish').style.display = 'none';
 		}
-		if (levels[levelID].meat >= levels[levelID].maxMeat) {
+		if (score.food.meat.number >= levels[levelID].maxMeat) {
 			document.getElementById('max-meat').style.display = 'inline-block';
 		} else {
 			document.getElementById('max-meat').style.display = 'none';
@@ -186,9 +208,19 @@ window.addEventListener('load', function load(event) {
 	});
 
 	window.addEventListener('click', (event) => {
-		if (!moving) {
+		if (gameon && !moving) {
 			moving = true;
 			gameLoop(performance.now(), atlas.path);
 		}
 	});
+
+	document.getElementById('replay').addEventListener('click', (event) => {
+		event.stopPropagation();
+		loadLevel(levels[levelID]);
+		reset();
+		window.requestAnimationFrame(render);
+	});
+
+	reset();
+	loadLevel(levels[levelID]);
 });
