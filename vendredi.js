@@ -29,10 +29,10 @@ window.addEventListener('load', function load(event) {
 		levels.push({
 			fish: current.fish,
 			maxFish: current.maxFish,
-			fishingProbability: current.fishingProbability,
+			fishingProbability: current.fishingProbability * 0.95,
 			meat: current.meat,
 			maxMeat: current.maxMeat,
-			meatingProbability: current.meatingProbability,
+			meatingProbability: current.meatingProbability * 0.95,
 			atlas: {
 				size: current.atlas.size,
 				meshSize: current.atlas.meshSize,
