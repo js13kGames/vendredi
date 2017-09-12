@@ -1,4 +1,20 @@
 window.addEventListener('load', function load(event) {
+	let levels = [
+		{
+			fish: 5, // How many fish Vendredi has
+			maxFish: 5, // Maximum fishes that Vendredi can keep
+			fishingProbability: 0.5, // 50% chances to fish on any water cell
+			meat: 0, // How many meat Vendredi has
+			maxMeat: 5, // Maximum meat that Vendredi can keep
+			meatingProbability: 0.9, // 10% chances to fish on any water cell
+			atlas: {
+				size: 16,
+				meshSize: 4,
+				islandThreshold: 0.8,
+				continentRadius: 10
+			}
+		}
+	];
 	let score = {
 		days: 0, // How many days of survival by Vendredi
 		ate: {
@@ -7,22 +23,8 @@ window.addEventListener('load', function load(event) {
 		},
 		islands: 0,
 		move: 0
-	}
-	let level = {
-		id: 1,
-		fish: 5, // How many fish Vendredi has
-		maxFish: 5, // Maximum fishes that Vendredi can keep
-		fishingProbability: 0.5, // 50% chances to fish on any water cell
-		meat: 0, // How many meat Vendredi has
-		maxMeat: 5, // Maximum meat that Vendredi can keep
-		meatingProbability: 0.9, // 10% chances to fish on any water cell
-		atlas: {
-			size: 16,
-			meshSize: 4,
-			islandThreshold: 0.8,
-			continentRadius: 10
-		}
 	};
+	let level = levels[0];
 	let gameon = true; // Is the game actually running (if not, then probably Game over)
 	let moving = false; // Is Vendredi moving along a path currently
 	let movePerSecond = 10; // When moving along a path, move N cells per second
