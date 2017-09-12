@@ -152,8 +152,18 @@ window.addEventListener('load', function load(event) {
 		// Update food
 		level.fish = Math.min(level.fish, level.maxFish);
 		level.meat = Math.min(level.meat, level.maxMeat);
-		document.getElementById('fish').textContent = 'b'.repeat(level.fish);
-		document.getElementById('meat').textContent = 'c'.repeat(level.meat);
+		document.getElementById('fish').textContent = level.fish;
+		document.getElementById('meat').textContent = level.meat;
+		if (level.fish >= level.maxFish) {
+			document.getElementById('max-fish').style.display = 'inline-block';
+		} else {
+			document.getElementById('max-fish').style.display = 'none';
+		}
+		if (level.meat >= level.maxMeat) {
+			document.getElementById('max-meat').style.display = 'inline-block';
+		} else {
+			document.getElementById('max-meat').style.display = 'none';
+		}
 		if (gameon) {
 			window.requestAnimationFrame(render);
 		}
