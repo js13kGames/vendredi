@@ -24,12 +24,12 @@ window.addEventListener('load', function load(event) {
 		islands: 0,
 		move: 0
 	};
-	let level = levels[0];
+	let levelID = 0;
 	let gameon = true; // Is the game actually running (if not, then probably Game over)
 	let moving = false; // Is Vendredi moving along a path currently
 	let movePerSecond = 10; // When moving along a path, move N cells per second
 
-	let atlas = Atlas(level.atlas);
+	let atlas = Atlas(levels[levelID].atlas);
 	atlas.generateAtlas();
 
 	let canvas = document.getElementById('canvas');
@@ -66,9 +66,9 @@ window.addEventListener('load', function load(event) {
 	};
 
 	let fishing = function(cell) {
-		let fished = Math.random() < level.fishingProbability;
-		if (fished && level.fish < level.maxFish) {
-			level.fish++;
+		let fished = Math.random() < levels[levelID].fishingProbability;
+		if (fished && levels[levelID].fish < levels[levelID].maxFish) {
+			levels[levelID].fish++;
 			canvas.foundFish(cell);
 		}
 	};
@@ -82,13 +82,13 @@ window.addEventListener('load', function load(event) {
 			});
 		}
 		let meats = 0;
-		for (let i = 0; i < level.maxMeat; i++) {
-			let meated = Math.random() < level.meatingProbability;
-			if (meated && level.meat + meats < level.maxMeat) {
+		for (let i = 0; i < levels[levelID].maxMeat; i++) {
+			let meated = Math.random() < levels[levelID].meatingProbability;
+			if (meated && levels[levelID].meat + meats < levels[levelID].maxMeat) {
 				meats++;
 			}
 		}
-		level.meat += meats;
+		levels[levelID].meat += meats;
 		canvas.foundMeat(cell, meats);
 	};
 
@@ -115,11 +115,11 @@ window.addEventListener('load', function load(event) {
 		// Update days
 		score.days++;
 		// Update food
-		if (level.meat > 0) {
-			level.meat--;
+		if (levels[levelID].meat > 0) {
+			levels[levelID].meat--;
 			score.ate.meat++;
 		} else {
-			level.fish--;
+			levels[levelID].fish--;
 			score.ate.fish++;
 		}
 	};
@@ -139,7 +139,7 @@ window.addEventListener('load', function load(event) {
 		if (second.type === 'continent') {
 			saved();
 			return;
-		} else if (level.fish === 0 && level.meat === 0) {
+		} else if (levels[levelID].fish === 0 && levels[levelID].meat === 0) {
 			die();
 			return;
 		}
@@ -154,16 +154,16 @@ window.addEventListener('load', function load(event) {
 	let render = function(time) {
 		canvas.draw();
 		// Update food
-		level.fish = Math.min(level.fish, level.maxFish);
-		level.meat = Math.min(level.meat, level.maxMeat);
-		document.getElementById('fish').textContent = level.fish;
-		document.getElementById('meat').textContent = level.meat;
-		if (level.fish >= level.maxFish) {
+		levels[levelID].fish = Math.min(levels[levelID].fish, levels[levelID].maxFish);
+		levels[levelID].meat = Math.min(levels[levelID].meat, levels[levelID].maxMeat);
+		document.getElementById('fish').textContent = levels[levelID].fish;
+		document.getElementById('meat').textContent = levels[levelID].meat;
+		if (levels[levelID].fish >= levels[levelID].maxFish) {
 			document.getElementById('max-fish').style.display = 'inline-block';
 		} else {
 			document.getElementById('max-fish').style.display = 'none';
 		}
-		if (level.meat >= level.maxMeat) {
+		if (levels[levelID].meat >= levels[levelID].maxMeat) {
 			document.getElementById('max-meat').style.display = 'inline-block';
 		} else {
 			document.getElementById('max-meat').style.display = 'none';
