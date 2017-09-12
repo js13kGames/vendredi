@@ -35,7 +35,7 @@ let Atlas = function(args) {
 			if (cell.elevation > threshold) {
 				cell.type = 'island';
 			}
-			if (distance >= this.continentRadius) {
+			if (distance === this.continentRadius) {
 				cell.type = 'continent';
 			}
 		});
