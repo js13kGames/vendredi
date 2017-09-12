@@ -12,7 +12,7 @@ window.addEventListener('load', function load(event) {
 		id: 1,
 		fish: 5, // How many fish Vendredi has
 		maxFish: 5, // Maximum fishes that Vendredi can keep
-		fishingProbability: 0.1, // 10% chances to fish on any water cell
+		fishingProbability: 0.5, // 50% chances to fish on any water cell
 		meat: 0, // How many meat Vendredi has
 		maxMeat: 5, // Maximum meat that Vendredi can keep
 		meatingProbability: 0.9, // 10% chances to fish on any water cell
@@ -23,72 +23,38 @@ window.addEventListener('load', function load(event) {
 			continentRadius: 10
 		}
 	};
-	let dayDuration = 1; // How many seconds last a day in the game
 	let gameon = true; // Is the game actually running (if not, then probably Game over)
 	let moving = false; // Is Vendredi moving along a path currently
 	let movePerSecond = 10; // When moving along a path, move N cells per second
+
 	let atlas = Atlas(level.atlas);
 	atlas.generateAtlas();
 
 	let canvas = document.getElementById('canvas');
 	canvas.atlas = atlas;
 
-	let $days = document.getElementById('days');
-	let $fish = document.getElementById('fish');
-	let $meat = document.getElementById('meat');
-
-	let displayScore = function() {
+	let renderScore = function() {
 		gameon = false;
 		document.getElementById('final-days').textContent = score.days;
 		document.getElementById('final-islands').textContent = score.islands;
 		document.getElementById('final-fish').textContent = score.ate.fish;
 		document.getElementById('final-meat').textContent = score.ate.meat;
 		document.getElementById('final-score').style.display = 'block';
-	}
+	};
+
 	let die = function() {
-		console.log('die');
 		for (let element of document.getElementsByClassName('dead')) {
 			element.style.display = 'inline-block';
 		};
-		displayScore();
+		renderScore();
 	};
+
 	let saved = function() {
-		console.log('saved');
 		for (let element of document.getElementsByClassName('alive')) {
 			element.style.display = 'inline-block';
 		};
-		displayScore();
+		renderScore();
 	}
-	let updateDays = function() {
-		let tens = Math.floor(score.days/10);
-		let units = score.days % 10;
-		$days.textContent = '';
-		if (tens > 0) {
-			$days.textContent = '55'.repeat(tens);
-		}
-		if (units > 0) {
-			$days.textContent += units;
-		}
-		$days.textContent = $days.textContent.replace(/.{5}/g, '$&\n');
-		score.days++;
-	};
-	updateDays();
-	let updateFood = function() {
-		level.fish = Math.min(level.fish, level.maxFish);
-		level.meat = Math.min(level.meat, level.maxMeat);
-		$fish.textContent = 'b'.repeat(level.fish);
-		$meat.textContent = 'c'.repeat(level.meat);
-		if (gameon) {
-			if (level.meat > 0) {
-				level.meat--;
-				score.ate.meat++;
-			} else {
-				level.fish--;
-				score.ate.fish++;
-			}
-		}
-	}
-	updateFood();
 
 	let updatePath = function(mousex, mousey) {
 		let x = (mousex - canvas.center.x) / canvas.unit;
@@ -96,11 +62,6 @@ window.addEventListener('load', function load(event) {
 		atlas.cursor = atlas.findCursorCell([x, y]);
 		atlas.path = atlas.findPath(atlas.cursor.coords);
 	};
-	window.addEventListener('mousemove', (event) => {
-		if (!moving) {
-			updatePath(event.clientX, event.clientY);
-		}
-	});
 
 	let fishing = function(cell) {
 		let fished = Math.random() < level.fishingProbability;
@@ -109,6 +70,7 @@ window.addEventListener('load', function load(event) {
 			canvas.foundFish(cell);
 		}
 	};
+
 	let exploring = function(cell) {
 		let island = atlas.onIsland(cell);
 		if (!cell.visited) {
@@ -122,23 +84,9 @@ window.addEventListener('load', function load(event) {
 			level.meat++;
 			canvas.foundMeat(cell);
 		}
-	}
+	};
 
-	let moveOnPath = function(start, path) {
-		let direction = 'east';
-		let first = path[0];
-		let second = path[1];
-		if (level.fish === 0 && level.meat === 0) {
-			die();
-			return;
-		} else if (second.type === 'continent') {
-			saved();
-			return;
-		} else if (second.type === 'island') {
-			exploring(second);
-		} else if (second.type === 'water') {
-			fishing(second);
-		}
+	let move = function(first, second) {
 		let dx = second.coords[0] - first.coords[0];
 		let dy = second.coords[1] - first.coords[1];
 		let dz = second.coords[2] - first.coords[2];
@@ -155,33 +103,76 @@ window.addEventListener('load', function load(event) {
 		} else if (dx === 0 && dy < 0 && dz > 0) {
 			atlas.move('southeast');
 		}
-		score.move++;
-		updateDays();
-		updateFood();
+	};
+
+	let update = function() {
+		// Update days
+		score.days++;
+		// Update food
+		if (level.meat > 0) {
+			level.meat--;
+			score.ate.meat++;
+		} else {
+			level.fish--;
+			score.ate.fish++;
+		}
+	};
+
+	let gameLoop = function(start, path) {
+		let first = path[0];
+		let second = path[1];
+		if (atlas.path.length >= 2) {
+			move(first, second);
+			update();
+		}
+		if (second.type === 'island') {
+			exploring(second);
+		} else if (second.type === 'water') {
+			fishing(second);
+		}
+		if (second.type === 'continent') {
+			saved();
+			return;
+		} else if (level.fish === 0 && level.meat === 0) {
+			die();
+			return;
+		}
 		let time = performance.now();
 		if (path.length > 2) {
-			setTimeout(moveOnPath, start + 1000 / movePerSecond - time, start + 1000 / movePerSecond, path.slice(1));
+			setTimeout(gameLoop, start + 1000 / movePerSecond - time, start + 1000 / movePerSecond, path.slice(1));
 		} else {
 			moving = false;
 		}
 	};
 
-	window.addEventListener('click', (event) => {
-		if (!moving) {
-			moving = true;
-			moveOnPath(performance.now(), atlas.path);
-		}
-	})
-
 	let render = function(time) {
 		canvas.draw();
+		// Update food
+		level.fish = Math.min(level.fish, level.maxFish);
+		level.meat = Math.min(level.meat, level.maxMeat);
+		document.getElementById('fish').textContent = 'b'.repeat(level.fish);
+		document.getElementById('meat').textContent = 'c'.repeat(level.meat);
 		if (gameon) {
 			window.requestAnimationFrame(render);
 		}
 	};
+
 	window.requestAnimationFrame(render);
 
 	window.addEventListener('resize', (event) => {
 		canvas.draw();
+	});
+
+	window.addEventListener('mousemove', (event) => {
+		if (!moving) {
+			updatePath(event.clientX, event.clientY);
+		}
+	});
+
+	window.addEventListener('click', (event) => {
+		if (!moving) {
+			moving = true;
+			gameLoop(performance.now(), atlas.path);
+		}
 	});
 });
