@@ -16,7 +16,7 @@ window.addEventListener('load', function load(event) {
 		}
 	];
 	let score = {};
-	let levelID = 0;
+	let levelID = parseInt(window.localStorage.getItem('levelBest')) || 0;
 	let gameon = true; // Is the game actually running (if not, then probably Game over)
 	let moving = false; // Is Vendredi moving along a path currently
 	let movePerSecond = 10; // When moving along a path, move N cells per second
@@ -40,6 +40,9 @@ window.addEventListener('load', function load(event) {
 				continentRadius: current.atlas.continentRadius + 8
 			}
 		});
+	};
+	for (let i = 0; i < levelID; i++) {
+		generateLevel();
 	}
 
 	let loadLevel = function(level) {
@@ -72,6 +75,7 @@ window.addEventListener('load', function load(event) {
 			element.style.display = 'none';
 		}
 		document.getElementById('next').style.display = 'none';
+		document.getElementById('previous').style.display = 'none';
 		moving = false;
 		gameon = true;
 	};
@@ -97,6 +101,11 @@ window.addEventListener('load', function load(event) {
 			element.style.display = 'inline-block';
 		};
 		document.getElementById('next').style.display = 'inline-block';
+		document.getElementById('next-level').textContent = `${levelID + 2}`;
+		if (levelID > 0) {
+			document.getElementById('previous').style.display = 'inline-block';
+			document.getElementById('previous-level').textContent = `${levelID}`;
+		}
 		renderScore();
 	}
 
@@ -245,8 +254,18 @@ window.addEventListener('load', function load(event) {
 		event.stopPropagation();
 		if (levelID === levels.length - 1) {
 			generateLevel();
-			levelID++;
-			console.log(levels[levelID]);
+		}
+		levelID++;
+		window.localStorage.setItem('levelBest', Math.max(levelID, parseInt(window.localStorage.getItem('levelBest') || 0)));
+		loadLevel(levels[levelID]);
+		reset();
+		window.requestAnimationFrame(render);
+	});
+
+	document.getElementById('previous').addEventListener('click', (event) => {
+		event.stopPropagation();
+		if (levelID > 0) {
+			levelID--;
 		}
 		loadLevel(levels[levelID]);
 		reset();
