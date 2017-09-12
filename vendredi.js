@@ -81,11 +81,15 @@ window.addEventListener('load', function load(event) {
 				cell.visited = true;
 			});
 		}
-		let crabed = Math.random() < level.crabingProbability;
-		if (crabed && level.crab < level.maxCrab) {
-			level.crab++;
-			canvas.foundCrab(cell);
+		let crabs = 0;
+		for (let i = 0; i < level.maxCrab; i++) {
+			let crabed = Math.random() < level.crabingProbability;
+			if (crabed && level.crab + crabs < level.maxCrab) {
+				crabs++;
+			}
 		}
+		level.crab += crabs;
+		canvas.foundCrab(cell, crabs);
 	};
 
 	let move = function(first, second) {

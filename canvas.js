@@ -178,10 +178,24 @@ let Canvas = function(args) {
 			this.context.fillStyle = 'white';
 			this.context.strokeStyle = 'black';
 			this.context.lineWidth = '2';
-			this.context.beginPath();
-			this.context.arc(x, y, 0.67 * this.unit, 0, 2.0*Math.PI);
-			this.context.fill();
-			this.context.closePath();
+			if (animation.number > 1) {
+				let [nx, ny] = convertCoords.call(this, animation.cell.neighbors['southwest'].neighbors['west'].pixelCoords());
+				this.context.beginPath();
+				this.context.arc(x, y, 0.67 * this.unit, -Math.PI / 2.0, Math.PI / 2.0);
+				this.context.arc(nx, ny, 0.67 * this.unit, Math.PI / 2.0, -Math.PI / 2.0);
+				this.context.fill();
+				this.context.closePath();
+				this.context.font = 'bold 16px Flood';
+				this.context.fillStyle = 'black';
+				this.context.textAlign = 'center';
+				this.context.textBaseline = 'middle';
+				this.context.fillText(animation.number, nx, ny);
+			} else {
+				this.context.beginPath();
+				this.context.arc(x, y, 0.67 * this.unit, 0, 2.0*Math.PI);
+				this.context.fill();
+				this.context.closePath();
+			}
 			this.context.restore();
 			let symbol = '';
 			if (animation.type === 'fish') {
@@ -196,7 +210,7 @@ let Canvas = function(args) {
 			this.context.globalAlpha = 1 - ratio * ratio;
 			this.context.textAlign = 'center';
 			this.context.textBaseline = 'middle';
-			this.context.font = `32px Flood`;
+			this.context.font = '32px Flood';
 			this.context.fillText(symbol, x, y);
 			this.context.restore();
 		});
@@ -233,9 +247,10 @@ let Canvas = function(args) {
 			start: performance.now()
 		});
 	};
-	let foundCrab = function(cell) {
+	let foundCrab = function(cell, number) {
 		this.animations.push({
 			type: 'crab',
+			number,
 			cell,
 			start: performance.now()
 		});
