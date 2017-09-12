@@ -10,8 +10,8 @@ window.addEventListener('load', function load(event) {
 	}
 	let level = {
 		id: 1,
-		fish: 10, // How many fish Vendredi has
-		maxFish: 10, // Maximum fishes that Vendredi can keep
+		fish: 5, // How many fish Vendredi has
+		maxFish: 5, // Maximum fishes that Vendredi can keep
 		fishingProbability: 0.1, // 10% chances to fish on any water cell
 		meat: 0, // How many meat Vendredi has
 		maxMeat: 5, // Maximum meat that Vendredi can keep
@@ -46,12 +46,14 @@ window.addEventListener('load', function load(event) {
 		document.getElementById('final-score').style.display = 'block';
 	}
 	let die = function() {
+		console.log('die');
 		for (let element of document.getElementsByClassName('dead')) {
 			element.style.display = 'inline-block';
 		};
 		displayScore();
 	};
 	let saved = function() {
+		console.log('saved');
 		for (let element of document.getElementsByClassName('alive')) {
 			element.style.display = 'inline-block';
 		};
@@ -68,15 +70,10 @@ window.addEventListener('load', function load(event) {
 			$days.textContent += units;
 		}
 		$days.textContent = $days.textContent.replace(/.{5}/g, '$&\n');
-		if (gameon) {
-			score.days++;
-		}
+		score.days++;
 	};
 	updateDays();
 	let updateFood = function() {
-		if (level.fish === 0 && level.meat === 0) {
-			die();
-		}
 		level.fish = Math.min(level.fish, level.maxFish);
 		level.meat = Math.min(level.meat, level.maxMeat);
 		$fish.textContent = 'b'.repeat(level.fish);
@@ -116,21 +113,32 @@ window.addEventListener('load', function load(event) {
 		let island = atlas.onIsland(cell);
 		if (!cell.visited) {
 			score.islands++;
+			island.forEach((cell) => {
+				cell.visited = true;
+			});
 		}
-		island.forEach((cell) => {
-			let meated = Math.random() < level.meatingProbability;
-			if (meated && level.meat < level.maxMeat && !cell.visited) {
-				level.meat++;
-				canvas.foundMeat(cell);
-			}
-			cell.visited = true;
-		});
+		let meated = Math.random() < level.meatingProbability;
+		if (meated && level.meat < level.maxMeat) {
+			level.meat++;
+			canvas.foundMeat(cell);
+		}
 	}
 
 	let moveOnPath = function(start, path) {
 		let direction = 'east';
 		let first = path[0];
 		let second = path[1];
+		if (level.fish === 0 && level.meat === 0) {
+			die();
+			return;
+		} else if (second.type === 'continent') {
+			saved();
+			return;
+		} else if (second.type === 'island') {
+			exploring(second);
+		} else if (second.type === 'water') {
+			fishing(second);
+		}
 		let dx = second.coords[0] - first.coords[0];
 		let dy = second.coords[1] - first.coords[1];
 		let dz = second.coords[2] - first.coords[2];
@@ -148,17 +156,10 @@ window.addEventListener('load', function load(event) {
 			atlas.move('southeast');
 		}
 		score.move++;
-		if (path[1].type === 'water') {
-			fishing(path[1]);
-		} else if (path[1].type === 'island') {
-			exploring(path[1]);
-		} else if (path[1].type === 'continent') {
-			saved();
-		}
+		updateDays();
+		updateFood();
 		let time = performance.now();
 		if (path.length > 2) {
-			updateDays();
-			updateFood();
 			setTimeout(moveOnPath, start + 1000 / movePerSecond - time, start + 1000 / movePerSecond, path.slice(1));
 		} else {
 			moving = false;
