@@ -64,6 +64,12 @@ window.addEventListener('load', function load(event) {
 		atlas = Atlas(level.atlas);
 		atlas.generateAtlas();
 		canvas.atlas = atlas;
+		document.getElementById('level-id').textContent = `${levelID + 1}`;
+		document.getElementById('level').style.display = 'block';
+		document.getElementById('level').className = 'visible';
+		setTimeout(() => {
+			document.getElementById('level').className = 'hidden';
+		}, 1000);
 	};
 
 	let reset = function() {
@@ -93,6 +99,10 @@ window.addEventListener('load', function load(event) {
 		for (let element of document.getElementsByClassName('dead')) {
 			element.style.display = 'inline-block';
 		};
+		if (levelID > 0) {
+			document.getElementById('previous').style.display = 'inline-block';
+			document.getElementById('previous-level').textContent = `${levelID}`;
+		}
 		renderScore();
 	};
 
@@ -224,8 +234,6 @@ window.addEventListener('load', function load(event) {
 		}
 	};
 
-	window.requestAnimationFrame(render);
-
 	window.addEventListener('resize', (event) => {
 		canvas.draw();
 	});
@@ -274,4 +282,5 @@ window.addEventListener('load', function load(event) {
 
 	reset();
 	loadLevel(levels[levelID]);
+	window.requestAnimationFrame(render);
 });

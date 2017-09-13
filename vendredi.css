@@ -5,6 +5,35 @@ html, body {
 	background: rgb(240, 240, 240);
 }
 
+#level {
+	display: none;
+	position: absolute;
+	float: left;
+	top: 0;
+	width: 50vw;
+	text-align: center;
+	background: black;
+	color: white;
+	padding-top: 25vh;
+	padding-left: 25vw;
+	padding-right: 25vw;
+
+	font-size: 125%;
+
+	transform-origin: 50vw top;
+	transform: translateX(-50vw) rotate(-60deg);
+}
+.visible {
+	display: block;
+	opacity: 1;
+	transition: opacity 0.2s ease;
+}
+.hidden {
+	display: none;
+	opacity: 0;
+	transition: opacity 2s ease;
+}
+
 #canvas {
 	display: block;
 	width: 100%;
