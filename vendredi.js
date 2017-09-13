@@ -82,6 +82,7 @@ window.addEventListener('load', function load(event) {
 		}
 		document.getElementById('next').style.display = 'none';
 		document.getElementById('previous').style.display = 'none';
+		document.getElementById('scores').style.display = 'none';
 		moving = false;
 		gameon = true;
 	};
@@ -93,6 +94,45 @@ window.addEventListener('load', function load(event) {
 		document.getElementById('final-fish').textContent = score.food.fish.ate;
 		document.getElementById('final-meat').textContent = score.food.meat.ate;
 		document.getElementById('final-score').style.display = 'block';
+		let table = document.getElementById('scores');
+		let tbody = table.getElementsByTagName('tbody')[0];
+		let scores = JSON.parse(window.localStorage.getItem('scores')) || {};
+		if (scores[levelID]) {
+			let threebest = scores[levelID].sort((a, b) =>{
+				 let ddays = a.days - b.days
+				if (ddays !== 0) {
+					return ddays;
+				}
+				let dislands = a.islands - b.islands
+				if (dislands !== 0) {
+					return dislands;
+				}
+				let dfood = a.fish + a.meat - b.fish - b.meat;
+				if (dfood !== 0) {
+					return dfood;
+				}
+			}).slice(0, 3);
+			while (tbody.firstChild) {
+				tbody.removeChild(tbody.firstChild);
+			}
+			for (let score of threebest) {
+				let tr = document.createElement('tr');
+				let tdDays = document.createElement('td');
+				tdDays.textContent = score.days;
+				tr.appendChild(tdDays);
+				let tdIslands = document.createElement('td');
+				tdIslands.textContent = score.islands;
+				tr.appendChild(tdIslands);
+				let tdFish = document.createElement('td');
+				tdFish.textContent = score.food.fish.ate;
+				tr.appendChild(tdFish);
+				let tdMeat = document.createElement('td');
+				tdMeat.textContent = score.food.meat.ate;
+				tr.appendChild(tdMeat);
+				tbody.appendChild(tr);
+			}
+			table.style.display = 'block';
+		}
 	};
 
 	let die = function() {
@@ -116,6 +156,12 @@ window.addEventListener('load', function load(event) {
 			document.getElementById('previous').style.display = 'inline-block';
 			document.getElementById('previous-level').textContent = `${levelID}`;
 		}
+		let scores = JSON.parse(window.localStorage.getItem('scores')) || {};
+		if (!Array.isArray(scores[levelID])) {
+			scores[levelID] = [];
+		}
+		scores[levelID].push(score);
+		window.localStorage.setItem('scores', JSON.stringify(scores));
 		renderScore();
 	}
 

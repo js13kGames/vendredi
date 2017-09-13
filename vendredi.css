@@ -7,8 +7,7 @@ html, body {
 
 #level {
 	display: none;
-	position: absolute;
-	float: left;
+	position: fixed;
 	top: 0;
 	width: 50vw;
 	text-align: center;
@@ -171,4 +170,32 @@ html, body {
 }
 #previous, #next {
 	display: none;
+}
+
+#scores {
+	display: none;
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	margin: 1ex;
+
+}
+#score > span {
+	font-weight: bold;
+}
+#scores > table {
+	font-size: 50%;
+	text-align: center;
+
+	border-spacing: 0;
+}
+#scores thead th {
+	padding: 0.2em;
+	border-bottom-style: solid;
+}
+#scores thead th img {
+	height: 1ex;
+}
+#scores tbody > tr:nth-child(odd) {
+	background: #E0E0E0;
 }
